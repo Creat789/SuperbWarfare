@@ -71,7 +71,9 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     public int changeTargetTimer = 5000;
 
     public LaserTowerEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.LASER_TOWER.get(), world);
+        //this(ModEntities.LASER_TOWER.get(), world);
+        super(null, null);
+
     }
 
     public LaserTowerEntity(EntityType<LaserTowerEntity> type, Level world) {
@@ -80,7 +82,8 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     }
 
     public LaserTowerEntity(LivingEntity owner, Level level) {
-        super(ModEntities.LASER_TOWER.get(), level);
+        super(null, null);
+        //super(ModEntities.LASER_TOWER.get(), level);
         this.setOwnerUUID(owner.getUUID());
     }
 

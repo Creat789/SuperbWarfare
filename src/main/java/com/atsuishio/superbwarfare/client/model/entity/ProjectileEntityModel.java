@@ -26,11 +26,8 @@ public class ProjectileEntityModel extends GeoModel<ProjectileEntity> {
             return ModUtils.loc("geo/projectile_entity2.geo.json");
         }
 
-        if ((ClientEventHandler.zoom && !player.getMainHandItem().is(ModItems.MINIGUN.get()))
-                || player.getMainHandItem().is(ModItems.GLOCK_17.get())
-                || player.getMainHandItem().is(ModItems.GLOCK_18.get())
-                || player.getMainHandItem().is(ModItems.BOCEK.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity)) {
+        if ((ClientEventHandler.zoom &&
+                player.getVehicle() instanceof ArmedVehicleEntity)) {
             return ModUtils.loc("geo/projectile_entity.geo.json");
         } else {
             return ModUtils.loc("geo/projectile_entity2.geo.json");

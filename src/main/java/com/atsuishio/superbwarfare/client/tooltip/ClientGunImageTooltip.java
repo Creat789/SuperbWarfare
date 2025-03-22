@@ -122,7 +122,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器等级文本组件
      */
     protected Component getLevelComponent() {
-        int level = GunsTool.getGunIntTag(stack, "Level", 0);
+        int level = GunsTool.getGunIntTag(stack, "Leveld", 0);
         double rate = GunsTool.getGunDoubleTag(stack, "Exp", 0) / (20 * Math.pow(level, 2) + 160 * level + 20);
 
         ChatFormatting formatting;

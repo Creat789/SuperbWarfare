@@ -39,7 +39,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SenpaiEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.SENPAI.get(), world);
+        super(null,null);
     }
 
     public SenpaiEntity(EntityType<SenpaiEntity> type, Level world) {

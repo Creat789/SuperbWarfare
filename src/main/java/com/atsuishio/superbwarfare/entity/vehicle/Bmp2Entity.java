@@ -211,7 +211,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         collideBlock();
-        if (this.getDeltaMovement().length() > 0.15) {
+        if (this.getDeltaMovement().length() > 0.1) {
             collideHardBlock();
         }
 

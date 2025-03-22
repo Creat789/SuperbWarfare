@@ -70,7 +70,7 @@ public class ZoomMessage {
                 ) SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get(), 2, 1);
 
 
-                if (player.getMainHandItem().getItem() == ModItems.JAVELIN.get()) {
+                /*if (player.getMainHandItem().getItem() == ModItems.JAVELIN.get()) {
                     var handItem = player.getMainHandItem();
                     var tag = handItem.getOrCreateTag();
                     tag.putBoolean("Seeking", false);
@@ -78,7 +78,7 @@ public class ZoomMessage {
                     tag.putString("TargetEntity", "none");
                     var clientboundstopsoundpacket = new ClientboundStopSoundPacket(new ResourceLocation(ModUtils.MODID, "javelin_lock"), SoundSource.PLAYERS);
                     player.connection.send(clientboundstopsoundpacket);
-                }
+                }*/
             }
         });
         context.setPacketHandled(true);

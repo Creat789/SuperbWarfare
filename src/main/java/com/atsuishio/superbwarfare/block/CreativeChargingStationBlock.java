@@ -39,9 +39,9 @@ public class CreativeChargingStationBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (!pLevel.isClientSide) {
+        /*if (!pLevel.isClientSide) {
             return createTickerHelper(pBlockEntityType, ModBlockEntities.CREATIVE_CHARGING_STATION.get(), (pLevel1, pPos, pState1, blockEntity) -> CreativeChargingStationBlockEntity.serverTick(blockEntity));
-        }
+        }*/
         return null;
     }
 

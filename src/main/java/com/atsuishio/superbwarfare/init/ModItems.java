@@ -121,7 +121,7 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModUtils.MODID);
 
     public static final RegistryObject<Item> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
-    public static final RegistryObject<Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.SENPAI, -11584987, -14014413, new Item.Properties()));
+    //public static final RegistryObject<Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.SENPAI, -11584987, -14014413, new Item.Properties()));
     public static final RegistryObject<Item> ANCIENT_CPU = ITEMS.register("ancient_cpu", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> PROPELLER = ITEMS.register("propeller", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> LARGE_PROPELLER = ITEMS.register("large_propeller", () -> new Item(new Item.Properties()));
@@ -133,16 +133,16 @@ public class ModItems {
 
     public static final RegistryObject<Item> MONITOR = ITEMS.register("monitor", Monitor::new);
     public static final RegistryObject<Item> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
-    public static final RegistryObject<Item> KNIFE = ITEMS.register("knife", Knife::new);
-    public static final RegistryObject<Item> HAMMER = ITEMS.register("hammer", Hammer::new);
+    //public static final RegistryObject<Item> KNIFE = ITEMS.register("knife", Knife::new);
+    //public static final RegistryObject<Item> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final RegistryObject<Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
     public static final RegistryObject<Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
 
-    public static final RegistryObject<Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
+    /*public static final RegistryObject<Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
     public static final RegistryObject<Item> RU_CHEST_6B43 = ITEMS.register("ru_chest_6b43", RuChest6b43::new);
     public static final RegistryObject<Item> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
     public static final RegistryObject<Item> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
-    public static final RegistryObject<Item> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
+    public static final RegistryObject<Item> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);*/
     public static final RegistryObject<Item> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
     public static final RegistryObject<Item> MORTAR_BARREL = ITEMS.register("mortar_barrel", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> MORTAR_BASE_PLATE = ITEMS.register("mortar_base_plate", () -> new Item(new Item.Properties()));
@@ -197,12 +197,12 @@ public class ModItems {
     public static final RegistryObject<Item> NETHERITE_TRIGGER = ITEMS.register("netherite_trigger", () -> new Item(new Item.Properties().rarity(RarityTool.LEGENDARY)));
     public static final RegistryObject<Item> NETHERITE_SPRING = ITEMS.register("netherite_spring", () -> new Item(new Item.Properties().rarity(RarityTool.LEGENDARY)));
 
-    public static final RegistryObject<Item> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
+    /*public static final RegistryObject<Item> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
     public static final RegistryObject<Item> RARE_MATERIAL_PACK = ITEMS.register("rare_material_pack", () -> new MaterialPack(Rarity.RARE));
     public static final RegistryObject<Item> EPIC_MATERIAL_PACK = ITEMS.register("epic_material_pack", () -> new MaterialPack(Rarity.EPIC));
-    public static final RegistryObject<Item> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(RarityTool.LEGENDARY));*/
 
-    public static final RegistryObject<Item> TRACHELIUM_BLUEPRINT = ITEMS.register("trachelium_blueprint", () -> new BlueprintItem(Rarity.EPIC));
+    /*public static final RegistryObject<Item> TRACHELIUM_BLUEPRINT = ITEMS.register("trachelium_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> GLOCK_17_BLUEPRINT = ITEMS.register("glock_17_blueprint", () -> new BlueprintItem(Rarity.COMMON));
     public static final RegistryObject<Item> MP_443_BLUEPRINT = ITEMS.register("mp_443_blueprint", () -> new BlueprintItem(Rarity.COMMON));
     public static final RegistryObject<Item> GLOCK_18_BLUEPRINT = ITEMS.register("glock_18_blueprint", () -> new BlueprintItem(Rarity.RARE));
@@ -242,13 +242,13 @@ public class ModItems {
     public static final RegistryObject<Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> MEDIUM_ARMAMENT_MODULE = ITEMS.register("medium_armament_module", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new BlueprintItem(RarityTool.LEGENDARY));
-
+*/
     /**
      * Block
      */
     public static final DeferredRegister<Item> BLOCKS = DeferredRegister.create(ForgeRegistries.ITEMS, ModUtils.MODID);
 
-    public static final RegistryObject<Item> GALENA_ORE = block(ModBlocks.GALENA_ORE);
+   /* public static final RegistryObject<Item> GALENA_ORE = block(ModBlocks.GALENA_ORE);
     public static final RegistryObject<Item> DEEPSLATE_GALENA_ORE = block(ModBlocks.DEEPSLATE_GALENA_ORE);
     public static final RegistryObject<Item> SCHEELITE_ORE = block(ModBlocks.SCHEELITE_ORE);
     public static final RegistryObject<Item> DEEPSLATE_SCHEELITE_ORE = block(ModBlocks.DEEPSLATE_SCHEELITE_ORE);
@@ -258,16 +258,16 @@ public class ModItems {
     public static final RegistryObject<Item> SANDBAG = block(ModBlocks.SANDBAG);
     public static final RegistryObject<Item> BARBED_WIRE = block(ModBlocks.BARBED_WIRE);
     public static final RegistryObject<Item> DRAGON_TEETH = block(ModBlocks.DRAGON_TEETH);
-    public static final RegistryObject<Item> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);
-    public static final RegistryObject<Item> CHARGING_STATION = block(ModBlocks.CHARGING_STATION);
-    public static final RegistryObject<Item> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station",
-            () -> new CreativeChargingStationBlockItem(ModBlocks.CREATIVE_CHARGING_STATION.get(), new Item.Properties().rarity(Rarity.EPIC)));
-    public static final RegistryObject<Item> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
+    public static final RegistryObject<Item> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);*/
+    //public static final RegistryObject<Item> CHARGING_STATION = block(ModBlocks.CHARGING_STATION);
+    /*public static final RegistryObject<Item> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station",
+            () -> new CreativeChargingStationBlockItem(ModBlocks.CREATIVE_CHARGING_STATION.get(), new Item.Properties().rarity(Rarity.EPIC)));*/
+   /* public static final RegistryObject<Item> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
     public static final RegistryObject<Item> STEEL_BLOCK = block(ModBlocks.STEEL_BLOCK);
     public static final RegistryObject<Item> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);
     public static final RegistryObject<Item> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
-    public static final RegistryObject<Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
-    public static final RegistryObject<Item> FUMO_25 = block(ModBlocks.FUMO_25);
+    public static final RegistryObject<Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);*/
+    //public static final RegistryObject<Item> FUMO_25 = block(ModBlocks.FUMO_25);
 
     private static RegistryObject<Item> block(RegistryObject<Block> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
@@ -285,8 +285,8 @@ public class ModItems {
         ModPerks.DAMAGE_PERKS.getEntries().forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem(registryObject)));
     }
 
-    public static final RegistryObject<Item> SHORTCUT_PACK = PERKS.register("shortcut_pack", ShortcutPack::new);
-    public static final RegistryObject<Item> EMPTY_PERK = PERKS.register("empty_perk", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> SHORTCUT_PACK = PERKS.register("shortcut_pack", ShortcutPack::new);
+    //public static final RegistryObject<Item> EMPTY_PERK = PERKS.register("empty_perk", () -> new Item(new Item.Properties()));
     /**
      * 单独注册，用于Tab图标，不要删
      */
@@ -294,11 +294,11 @@ public class ModItems {
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
-        GUNS.register(bus);
+        //GUNS.register(bus);
         AMMO.register(bus);
         BLOCKS.register(bus);
-        registerPerkItems();
-        PERKS.register(bus);
+        //registerPerkItems();
+        //PERKS.register(bus);
         REGISTRY.register(bus);
     }
 }

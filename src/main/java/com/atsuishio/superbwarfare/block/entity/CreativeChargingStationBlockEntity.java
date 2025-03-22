@@ -27,7 +27,7 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
     private LazyOptional<IEnergyStorage> energyHandler;
 
     public CreativeChargingStationBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CREATIVE_CHARGING_STATION.get(), pos, state);
+        super(ModBlockEntities.CONTAINER.get(), pos, state);
         this.energyHandler = LazyOptional.of(InfinityEnergyStorage::new);
     }
 

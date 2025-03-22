@@ -20,14 +20,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        horizontalBlock(ModBlocks.BARBED_WIRE.get(), new ModelFile.UncheckedModelFile(modLoc("block/barbed_wire")));
-        horizontalBlock(ModBlocks.JUMP_PAD.get(), new ModelFile.UncheckedModelFile(modLoc("block/jump_pad")));
-        horizontalBlock(ModBlocks.REFORGING_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/reforging_table")));
+       // horizontalBlock(ModBlocks.BARBED_WIRE.get(), new ModelFile.UncheckedModelFile(modLoc("block/barbed_wire")));
+        //horizontalBlock(ModBlocks.JUMP_PAD.get(), new ModelFile.UncheckedModelFile(modLoc("block/jump_pad")));
+        //horizontalBlock(ModBlocks.REFORGING_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/reforging_table")));
         horizontalBlock(ModBlocks.CONTAINER.get(), new ModelFile.UncheckedModelFile(modLoc("block/container")));
-        horizontalBlock(ModBlocks.CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/charging_station")));
-        horizontalBlock(ModBlocks.CREATIVE_CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/creative_charging_station")));
+        //horizontalBlock(ModBlocks.CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/charging_station")));
+        //horizontalBlock(ModBlocks.CREATIVE_CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/creative_charging_station")));
 
-        blockWithItem(ModBlocks.GALENA_ORE);
+       /* blockWithItem(ModBlocks.GALENA_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_GALENA_ORE);
         blockWithItem(ModBlocks.SCHEELITE_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_SCHEELITE_ORE);
@@ -37,9 +37,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         blockWithItem(ModBlocks.CEMENTED_CARBIDE_BLOCK);
         blockWithItem(ModBlocks.SILVER_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_SILVER_ORE);
-        blockWithItem(ModBlocks.SILVER_BLOCK);
+        blockWithItem(ModBlocks.SILVER_BLOCK);*/
 
-        simpleBlock(ModBlocks.FUMO_25.get(), new ModelFile.UncheckedModelFile(modLoc("block/fumo_25")));
+       // simpleBlock(ModBlocks.FUMO_25.get(), new ModelFile.UncheckedModelFile(modLoc("block/fumo_25")));
     }
 
     private String name(Block block) {

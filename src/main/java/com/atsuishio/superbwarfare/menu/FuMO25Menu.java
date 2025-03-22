@@ -49,7 +49,8 @@ public class FuMO25Menu extends EnergyMenu {
     }
 
     public FuMO25Menu(int pContainerId, Inventory inventory, Container container, ContainerLevelAccess access, ContainerEnergyData containerData) {
-        super(ModMenuTypes.FUMO_25_MENU.get(), pContainerId, containerData);
+        //super(ModMenuTypes.FUMO_25_MENU.get(), pContainerId, containerData);
+        super(null,0,null);
 
         checkContainerSize(container, 1);
 
@@ -151,7 +152,7 @@ public class FuMO25Menu extends EnergyMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.FUMO_25.get())
+        return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.CONTAINER.get())
                 && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true);
     }
 

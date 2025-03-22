@@ -17,21 +17,21 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void registerTooltip(RegisterClientTooltipComponentFactoriesEvent event) {
-        event.register(GunImageComponent.class, ClientGunImageTooltip::new);
-        event.register(ShotgunImageComponent.class, ClientShotgunImageTooltip::new);
-        event.register(BocekImageComponent.class, ClientBocekImageTooltip::new);
+        //event.register(GunImageComponent.class, ClientGunImageTooltip::new);
+        //event.register(ShotgunImageComponent.class, ClientShotgunImageTooltip::new);
+        //event.register(BocekImageComponent.class, ClientBocekImageTooltip::new);
         event.register(EnergyImageComponent.class, ClientEnergyImageTooltip::new);
         event.register(CellImageComponent.class, ClientCellImageTooltip::new);
-        event.register(SentinelImageComponent.class, ClientSentinelImageTooltip::new);
-        event.register(LauncherImageComponent.class, ClientLauncherImageTooltip::new);
-        event.register(SecondaryCataclysmImageComponent.class, ClientSecondaryCataclysmImageTooltip::new);
+       // event.register(SentinelImageComponent.class, ClientSentinelImageTooltip::new);
+       // event.register(LauncherImageComponent.class, ClientLauncherImageTooltip::new);
+        //event.register(SecondaryCataclysmImageComponent.class, ClientSecondaryCataclysmImageTooltip::new);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.CONTAINER.get(), context -> new ContainerBlockEntityRenderer());
-        event.registerBlockEntityRenderer(ModBlockEntities.FUMO_25.get(), context -> new FuMO25BlockEntityRenderer());
-        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());
+        /*event.registerBlockEntityRenderer(ModBlockEntities.FUMO_25.get(), context -> new FuMO25BlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());*/
     }
 
 }

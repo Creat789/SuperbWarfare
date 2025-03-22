@@ -99,7 +99,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     };
 
     public ChargingStationBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CHARGING_STATION.get(), pos, state);
+        super(ModBlockEntities.CONTAINER.get(), pos, state);
 
         this.energyHandler = LazyOptional.of(() -> new EnergyStorage(MAX_ENERGY));
     }

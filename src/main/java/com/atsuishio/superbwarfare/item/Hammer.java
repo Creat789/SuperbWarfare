@@ -67,7 +67,7 @@ public class Hammer extends SwordItem {
 
         if (player.level().isClientSide) return;
 
-        if (item.is(ModItems.HAMMER.get())) {
+        /*if (item.is(ModItems.HAMMER.get())) {
             int count = 0;
             for (int i = 0; i < container.getContainerSize(); i++) {
                 if (container.getItem(i).is(ModItems.HAMMER.get())) count++;
@@ -75,6 +75,6 @@ public class Hammer extends SwordItem {
             if (count == 2) {
                 container.clearContent();
             }
-        }
+        }*/
     }
 }

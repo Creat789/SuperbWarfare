@@ -16,6 +16,10 @@ import javax.annotation.Nullable;
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 public class ModDamageTypes {
 
+    public static void init() {
+        System.out.println("ModDamageTypes loaded!");
+    }
+
     public static final ResourceKey<DamageType> GUN_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire"));
     public static final ResourceKey<DamageType> GUN_FIRE_ABSOLUTE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire_absolute"));
     public static final ResourceKey<DamageType> GUN_FIRE_HEADSHOT = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire_headshot"));

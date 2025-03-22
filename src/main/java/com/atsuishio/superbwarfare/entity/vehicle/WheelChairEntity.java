@@ -48,7 +48,9 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     public int handBusyTime;
 
     public WheelChairEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.WHEEL_CHAIR.get(), world);
+        //this(ModEntities.WHEEL_CHAIR.get(), world);
+        super(null, null);
+
     }
 
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {

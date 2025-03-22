@@ -29,7 +29,8 @@ public class ChargingStationMenu extends EnergyMenu {
     }
 
     public ChargingStationMenu(int id, Inventory inventory, Container container, ContainerEnergyData containerData) {
-        super(ModMenuTypes.CHARGING_STATION_MENU.get(), id, containerData);
+        super(null,0,null);
+        // super(ModMenuTypes.CHARGING_STATION_MENU.get(), id, containerData);
 
         checkContainerSize(container, 2);
 

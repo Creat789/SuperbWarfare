@@ -17,15 +17,5 @@ public class KillMessageHandler {
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-
-        for (PlayerKillRecord record : QUEUE) {
-            if (record.freeze && record.tick >= 3) {
-                continue;
-            }
-            record.tick++;
-            if (record.fastRemove && record.tick >= 82 || record.tick >= 100) {
-                QUEUE.poll();
-            }
-        }
     }
 }

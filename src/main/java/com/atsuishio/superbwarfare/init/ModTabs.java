@@ -46,7 +46,7 @@ public class ModTabs {
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModUtils.MODID);
 
-    public static final RegistryObject<CreativeModeTab> GUN_TAB = TABS.register("guns",
+    /*public static final RegistryObject<CreativeModeTab> GUN_TAB = TABS.register("guns",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.guns"))
                     .icon(() -> new ItemStack(ModItems.TASER.get()))
@@ -88,21 +88,21 @@ public class ModTabs {
                                 output.accept(JavelinItem.getGunInstance());
                             }
                     )
-                    .build());
+                    .build());*/
 
-    public static final RegistryObject<CreativeModeTab> PERK_TAB = TABS.register("perk",
+    /*public static final RegistryObject<CreativeModeTab> PERK_TAB = TABS.register("perk",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.perk"))
                     .icon(() -> new ItemStack(ModItems.AP_BULLET.get()))
-                    .withTabsBefore(GUN_TAB.getKey())
+                    //.withTabsBefore(GUN_TAB.getKey())
                     .displayItems((param, output) -> ModItems.PERKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
-                    .build());
+                    .build());*/
 
     public static final RegistryObject<CreativeModeTab> AMMO_TAB = TABS.register("ammo",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.ammo"))
                     .icon(() -> new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get()))
-                    .withTabsBefore(PERK_TAB.getKey())
+                    //.withTabsBefore(PERK_TAB.getKey())
                     .displayItems((param, output) -> {
                         ModItems.AMMO.getEntries().forEach(registryObject -> {
                             if (registryObject.get() != ModItems.POTION_MORTAR_SHELL.get()) {
@@ -138,7 +138,7 @@ public class ModTabs {
     public static final RegistryObject<CreativeModeTab> BLOCK_TAB = TABS.register("block",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.block"))
-                    .icon(() -> new ItemStack(ModItems.SANDBAG.get()))
+                    .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
                     .withTabsBefore(ITEM_TAB.getKey())
                     .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
                     .build());
@@ -146,7 +146,7 @@ public class ModTabs {
     @SubscribeEvent
     public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
         if (tabData.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            tabData.accept(ModItems.SENPAI_SPAWN_EGG.get());
+            //tabData.accept(ModItems.SENPAI_SPAWN_EGG.get());
         }
     }
 

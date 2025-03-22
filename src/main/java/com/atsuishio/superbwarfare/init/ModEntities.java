@@ -26,9 +26,6 @@ public class ModEntities {
             EntityType.Builder.<TargetEntity>of(TargetEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(TargetEntity::new).fireImmune().sized(0.875f, 2f));
     public static final RegistryObject<EntityType<MortarEntity>> MORTAR = register("mortar",
             EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(MortarEntity::new).fireImmune().sized(0.8f, 1.4f));
-    public static final RegistryObject<EntityType<SenpaiEntity>> SENPAI = register("senpai",
-            EntityType.Builder.<SenpaiEntity>of(SenpaiEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(SenpaiEntity::new)
-                    .sized(0.6f, 2f));
     public static final RegistryObject<EntityType<ClaymoreEntity>> CLAYMORE = register("claymore",
             EntityType.Builder.<ClaymoreEntity>of(ClaymoreEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<C4Entity>> C_4 = register("c4",
@@ -68,9 +65,9 @@ public class ModEntities {
             EntityType.Builder.<LaserEntity>of(LaserEntity::new, MobCategory.MISC).sized(0.1f, 0.1f).fireImmune().setUpdateInterval(1));
     public static final RegistryObject<EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",
             EntityType.Builder.<SpeedboatEntity>of(SpeedboatEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(SpeedboatEntity::new).fireImmune().sized(3.0f, 2.0f));
-    public static final RegistryObject<EntityType<WheelChairEntity>> WHEEL_CHAIR = register("wheel_chair",
+   /* public static final RegistryObject<EntityType<WheelChairEntity>> WHEEL_CHAIR = register("wheel_chair",
             EntityType.Builder.<WheelChairEntity>of(WheelChairEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(WheelChairEntity::new).fireImmune().sized(1.0f, 1.0f));
-    public static final RegistryObject<EntityType<Ah6Entity>> AH_6 = register("ah_6",
+   */ public static final RegistryObject<EntityType<Ah6Entity>> AH_6 = register("ah_6",
             EntityType.Builder.<Ah6Entity>of(Ah6Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(Ah6Entity::new).fireImmune().sized(2.8f, 2.9f));
     public static final RegistryObject<EntityType<HeliRocketEntity>> HELI_ROCKET = register("projectile_heli_rocket",
             EntityType.Builder.<HeliRocketEntity>of(HeliRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(HeliRocketEntity::new).sized(0.5f, 0.5f));
@@ -86,26 +83,25 @@ public class ModEntities {
             EntityType.Builder.<Bmp2Entity>of(Bmp2Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(Bmp2Entity::new).fireImmune().sized(4f, 3f));
     public static final RegistryObject<EntityType<WgMissileEntity>> WG_MISSILE = register("wg_missile",
             EntityType.Builder.<WgMissileEntity>of(WgMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(WgMissileEntity::new).fireImmune().sized(0.5f, 0.5f));
-    public static final RegistryObject<EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
+    /*public static final RegistryObject<EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(LaserTowerEntity::new).fireImmune().sized(0.9f, 1.65f));
-    public static final RegistryObject<EntityType<Yx100Entity>> YX_100 = register("yx_100",
+   */ /*public static final RegistryObject<EntityType<Yx100Entity>> YX_100 = register("yx_100",
             EntityType.Builder.<Yx100Entity>of(Yx100Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(Yx100Entity::new).fireImmune().sized(5.5f, 3.25f));
-
+*/
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));
     }
 
     @SubscribeEvent
     public static void onRegisterSpawnPlacement(SpawnPlacementRegisterEvent event) {
-        event.register(ModEntities.SENPAI.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+        /*event.register(ModEntities.SENPAI.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (entityType, world, reason, pos, random) -> (world.getDifficulty() != Difficulty.PEACEFUL && SpawnConfig.SPAWN_SENPAI.get()
                         && Monster.isDarkEnoughToSpawn(world, pos, random) && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)),
-                SpawnPlacementRegisterEvent.Operation.OR);
+                SpawnPlacementRegisterEvent.Operation.OR);*/
     }
 
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(TARGET.get(), TargetEntity.createAttributes().build());
-        event.put(SENPAI.get(), SenpaiEntity.createAttributes().build());
     }
 }

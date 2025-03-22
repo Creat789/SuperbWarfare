@@ -16,10 +16,10 @@ public class ModScreens {
     @SubscribeEvent
     public static void clientLoad(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
-            MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
+            //MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
+            //MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
             MenuScreens.register(ModMenuTypes.VEHICLE_MENU.get(), VehicleScreen::new);
-            MenuScreens.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
+            //MenuScreens.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
         });
     }
 }

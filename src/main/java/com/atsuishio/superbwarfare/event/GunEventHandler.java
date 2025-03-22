@@ -44,24 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mod.EventBusSubscriber
 public class GunEventHandler {
-
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
-        if (player == null) {
-            return;
-        }
-
-        ItemStack stack = player.getMainHandItem();
-
-        if (event.phase == TickEvent.Phase.END && stack.is(ModTags.Items.GUN)) {
-            handleGunBolt(player);
-            handleGunReload(player);
-            handleGunSingleReload(player);
-            handleSentinelCharge(player);
-        }
-    }
-
     /**
      * 拉大栓
      */
@@ -241,21 +223,6 @@ public class GunEventHandler {
             bypassArmorRate = Math.max(bypassArmorRate, 0);
             projectile.bypassArmorRate(bypassArmorRate);
 
-            if (perk == ModPerks.SILVER_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, stack);
-                projectile.undeadMultiple(1.0f + 0.5f * level);
-            } else if (perk == ModPerks.BEAST_BULLET.get()) {
-                projectile.beast();
-            } else if (perk == ModPerks.JHP_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, stack);
-                projectile.jhpBullet(level);
-            } else if (perk == ModPerks.HE_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, stack);
-                projectile.heBullet(level);
-            } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, stack);
-                projectile.fireBullet(level, stack.is(ModTags.Items.SHOTGUN));
-            }
 
             var dmgPerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
@@ -464,10 +431,10 @@ public class GunEventHandler {
             } else if (stack.getItem() == ModItems.M_79.get()) {
                 GunsTool.setGunIntTag(stack, "Ammo", 1);
                 player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
-            } else if (stack.getItem() == ModItems.RPG.get()) {
+            }/* else if (stack.getItem() == ModItems.RPG.get()) {
                 GunsTool.setGunIntTag(stack, "Ammo", 1);
                 player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.ROCKET.get(), 1, player.inventoryMenu.getCraftSlots());
-            } else if (stack.getItem() == ModItems.JAVELIN.get()) {
+            }*/ else if (stack.getItem() == ModItems.JAVELIN.get()) {
                 GunsTool.setGunIntTag(stack, "Ammo", 1);
                 player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.JAVELIN_MISSILE.get(), 1, player.inventoryMenu.getCraftSlots());
             }
@@ -875,58 +842,6 @@ public class GunEventHandler {
         }
     }
 
-    /**
-     * 哨兵充能
-     */
-    private static void handleSentinelCharge(Player player) {
-        ItemStack stack = player.getMainHandItem();
-        // 启动换弹
-        if (GunsTool.getGunBooleanTag(stack, "StartCharge")) {
-            GunsTool.setGunIntTag(stack, "ChargeTime", 127);
-            GunsTool.setGunBooleanTag(stack, "Charging", true);
-
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(ModUtils.MODID, "sentinel_charge"));
-            if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
-            }
-
-            GunsTool.setGunBooleanTag(stack, "StartCharge", false);
-        }
-
-        if (GunsTool.getGunIntTag(stack, "ChargeTime", 0) > 0) {
-            GunsTool.setGunIntTag(stack, "ChargeTime", GunsTool.getGunIntTag(stack, "ChargeTime", 0) - 1);
-        }
-
-        if (GunsTool.getGunIntTag(stack, "ChargeTime", 0) == 17) {
-            for (var cell : player.getInventory().items) {
-                if (cell.is(ModItems.CELL.get())) {
-                    assert stack.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
-                    var stackStorage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().get();
-                    int stackMaxEnergy = stackStorage.getMaxEnergyStored();
-                    int stackEnergy = stackStorage.getEnergyStored();
-
-                    assert cell.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
-                    var cellStorage = cell.getCapability(ForgeCapabilities.ENERGY).resolve().get();
-                    int cellEnergy = cellStorage.getEnergyStored();
-
-                    int stackEnergyNeed = Math.min(cellEnergy, stackMaxEnergy - stackEnergy);
-
-                    if (cellEnergy > 0) {
-                        stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                                iEnergyStorage -> iEnergyStorage.receiveEnergy(stackEnergyNeed, false)
-                        );
-                    }
-                    cell.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                            cEnergy -> cEnergy.extractEnergy(stackEnergyNeed, false)
-                    );
-                }
-            }
-        }
-
-        if (GunsTool.getGunIntTag(stack, "ChargeTime", 0) == 1) {
-            GunsTool.setGunBooleanTag(stack, "Charging", false);
-        }
-    }
 
     @SubscribeEvent
     public static void onMissingMappings(MissingMappingsEvent event) {

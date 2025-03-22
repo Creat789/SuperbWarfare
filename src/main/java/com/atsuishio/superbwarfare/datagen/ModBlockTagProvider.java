@@ -23,18 +23,14 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
-        this.tag(BlockTags.NEEDS_IRON_TOOL).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(),
+       /* this.tag(BlockTags.NEEDS_IRON_TOOL).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(),
                 ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DRAGON_TEETH.get(),
-                ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
+                ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());*/
 
-        this.tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.BARBED_WIRE.get());
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(),
-                ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DRAGON_TEETH.get(),
-                ModBlocks.REFORGING_TABLE.get(), ModBlocks.LEAD_BLOCK.get(), ModBlocks.STEEL_BLOCK.get(), ModBlocks.TUNGSTEN_BLOCK.get(),
-                ModBlocks.CEMENTED_CARBIDE_BLOCK.get(), ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get(),
-                ModBlocks.SILVER_BLOCK.get(), ModBlocks.JUMP_PAD.get(), ModBlocks.CONTAINER.get(), ModBlocks.CHARGING_STATION.get(),
-                ModBlocks.FUMO_25.get());
-        this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
+      //  this.tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.BARBED_WIRE.get());
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.CONTAINER.get());//ModBlocks.CHARGING_STATION.get(),
+                //ModBlocks.FUMO_25.get());
+       // this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
                 .addTags(BlockTags.LEAVES, BlockTags.FENCES, BlockTags.FENCE_GATES, BlockTags.DOORS, BlockTags.TRAPDOORS, BlockTags.WALLS)

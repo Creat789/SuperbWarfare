@@ -30,7 +30,7 @@ public class SbwJEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         registration.addItemStackInfo(new ItemStack(ModItems.ANCIENT_CPU.get()), Component.translatable("jei.superbwarfare.ancient_cpu"));
-        registration.addItemStackInfo(new ItemStack(ModItems.CHARGING_STATION.get()), Component.translatable("jei.superbwarfare.charging_station"));
+        //registration.addItemStackInfo(new ItemStack(ModItems.CHARGING_STATION.get()), Component.translatable("jei.superbwarfare.charging_station"));
 
         List<CraftingRecipe> specialCraftingRecipes = PotionMortarShellRecipeMaker.createRecipes();
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);

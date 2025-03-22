@@ -210,9 +210,9 @@ public class CannonShellEntity extends ThrowableItemProjectile implements GeoEnt
                 this.level().destroyBlock(blockPos, true);
             }
 
-            if (blockState.is(ModBlocks.SANDBAG.get()) || blockState.is(Blocks.NETHERITE_BLOCK)) {
+            /*if (blockState.is(ModBlocks.SANDBAG.get()) || blockState.is(Blocks.NETHERITE_BLOCK)) {
                 this.durability -= 10;
-            }
+            }*/
 
             if (blockState.is(Blocks.IRON_BLOCK) || blockState.is(Blocks.COPPER_BLOCK)) {
                 this.durability -= 5;

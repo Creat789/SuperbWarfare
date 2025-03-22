@@ -103,7 +103,7 @@ public class CrossHairOverlay {
             }
         }
 
-        if (stack.is(ModItems.BOCEK.get())) {
+        /*if (stack.is(ModItems.BOCEK.get())) {
             if (stack.getOrCreateTag().getBoolean("HoloHidden")) {
                 preciseBlit(guiGraphics, ModUtils.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
                 if (!player.isSprinting() || player.getPersistentData().getDouble("noRun") > 0 || ClientEventHandler.pullPos > 0) {
@@ -118,7 +118,7 @@ public class CrossHairOverlay {
                     }
                 }
             }
-        }
+        }*/
 
         // 在开启伤害指示器时才进行渲染
         if (DisplayConfig.KILL_INDICATION.get() && !(player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player)) {
@@ -155,8 +155,9 @@ public class CrossHairOverlay {
         if (!player.getMainHandItem().is(ModTags.Items.GUN) || ClientEventHandler.zoomTime > 0.8)
             return false;
 
-        return !(player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get())
-                && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
+        /*return !(player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get())
+                && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;*/
+        return false;
     }
 
     private static void renderKillIndicator(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {

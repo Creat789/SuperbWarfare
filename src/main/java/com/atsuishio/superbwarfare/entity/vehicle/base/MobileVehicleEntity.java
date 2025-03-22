@@ -1,11 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
-import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -22,20 +18,19 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3f;
@@ -202,7 +197,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
                 BlockState blockstate = this.level().getBlockState(pos);
                 if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
                     this.level().destroyBlock(pos, true);
-                    this.setDeltaMovement(this.getDeltaMovement().scale(0.96));
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.98));
                 }
             });
         }
@@ -217,7 +212,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
                 BlockState blockstate = this.level().getBlockState(pos);
                 if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
                     this.level().destroyBlock(pos, true);
-                    this.setDeltaMovement(this.getDeltaMovement().scale(0.6));
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.9));
                 }
             });
         }
@@ -322,11 +317,18 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
                             entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
                     .stream().filter(entity -> {
                                 if (entity.isAlive()
-                                        && !(entity instanceof ItemEntity || entity instanceof Projectile || entity instanceof ProjectileEntity || entity instanceof LaserEntity || entity instanceof FlareDecoyEntity || entity instanceof AreaEffectCloud || entity instanceof C4Entity)
-                                        && !(entity instanceof Player player && (player.isSpectator() || player.isCreative()))) {
-                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-                                    if (type == null) return false;
-                                    return !VehicleConfig.COLLISION_ENTITY_BLACKLIST.get().contains(type.toString());
+                                        && (entity instanceof VehicleEntity
+                                        || entity instanceof Boat
+                                        || entity instanceof Minecart
+                                        || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                ) {
+                                    return true;
+
+                                    // todo 添加碰撞白名单
+
+//                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+//                                    if (type == null) return false;
+//                                    return !VehicleConfig.COLLISION_ENTITY_BLACKLIST.get().contains(type.toString());
                                 }
                                 return false;
                             }
@@ -346,7 +348,13 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
                     if (!(entity instanceof TargetEntity)) {
                         this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
                     }
-                    entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+
+                    if (entity instanceof MobileVehicleEntity mobileVehicle) {
+                        mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    } else {
+                        entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    }
+
                     entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (thisSize * 20 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));
                     if (entities instanceof VehicleEntity) {
                         this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (entitySize * 10 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));

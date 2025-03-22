@@ -21,7 +21,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleItem(ModItems.EMPTY_PERK, "perk/");
+        //simpleItem(ModItems.EMPTY_PERK, "perk/");
 
         simpleItem(ModItems.MORTAR_SHELL);
 
@@ -34,9 +34,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.WHEEL);
         simpleItem(ModItems.TRACK);
         simpleItem(ModItems.DRONE);
-        simpleItem(ModItems.LIGHT_ARMAMENT_MODULE);
+        /*simpleItem(ModItems.LIGHT_ARMAMENT_MODULE);
         simpleItem(ModItems.MEDIUM_ARMAMENT_MODULE);
-        simpleItem(ModItems.HEAVY_ARMAMENT_MODULE);
+        simpleItem(ModItems.HEAVY_ARMAMENT_MODULE);*/
 
         simpleItem(ModItems.TARGET_DEPLOYER);
         simpleItem(ModItems.MORTAR_DEPLOYER);
@@ -101,20 +101,20 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.NETHERITE_TRIGGER);
         simpleItem(ModItems.NETHERITE_SPRING);
 
-        simpleItem(ModItems.COMMON_MATERIAL_PACK);
+        /*simpleItem(ModItems.COMMON_MATERIAL_PACK);
         simpleItem(ModItems.RARE_MATERIAL_PACK);
         simpleItem(ModItems.EPIC_MATERIAL_PACK);
-        simpleItem(ModItems.LEGENDARY_MATERIAL_PACK);
+        simpleItem(ModItems.LEGENDARY_MATERIAL_PACK);*/
 
         // armor
-        simpleItem(ModItems.RU_HELMET_6B47);
+        /*simpleItem(ModItems.RU_HELMET_6B47);
         simpleItem(ModItems.RU_CHEST_6B43);
         simpleItem(ModItems.US_HELMET_PASTG);
         simpleItem(ModItems.US_CHEST_IOTV);
-        simpleItem(ModItems.GE_HELMET_M_35);
+        simpleItem(ModItems.GE_HELMET_M_35);*/
 
         // blueprints
-        gunBlueprintItem(ModItems.TRACHELIUM_BLUEPRINT);
+        /*gunBlueprintItem(ModItems.TRACHELIUM_BLUEPRINT);
         gunBlueprintItem(ModItems.GLOCK_17_BLUEPRINT);
         gunBlueprintItem(ModItems.GLOCK_18_BLUEPRINT);
         gunBlueprintItem(ModItems.MP_443_BLUEPRINT);
@@ -150,14 +150,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         cannonBlueprintItem(ModItems.MLE_1934_BLUEPRINT);
         cannonBlueprintItem(ModItems.ANNIHILATOR_BLUEPRINT);
         gunBlueprintItem(ModItems.M_2_HB_BLUEPRINT);
-        gunBlueprintItem(ModItems.SECONDARY_CATACLYSM_BLUEPRINT);
+        gunBlueprintItem(ModItems.SECONDARY_CATACLYSM_BLUEPRINT);*/
 
         // blocks
-        evenSimplerBlockItem(ModBlocks.BARBED_WIRE);
-        evenSimplerBlockItem(ModBlocks.JUMP_PAD);
-        evenSimplerBlockItem(ModBlocks.REFORGING_TABLE);
+        //evenSimplerBlockItem(ModBlocks.BARBED_WIRE);
+        //evenSimplerBlockItem(ModBlocks.JUMP_PAD);
+        /*evenSimplerBlockItem(ModBlocks.REFORGING_TABLE);
         evenSimplerBlockItem(ModBlocks.CHARGING_STATION);
-        evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION);
+        evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION);*/
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

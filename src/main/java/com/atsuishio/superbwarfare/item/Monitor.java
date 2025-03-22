@@ -129,7 +129,7 @@ public class Monitor extends Item {
         Vec3 droneVec = new Vec3(stack.getOrCreateTag().getDouble("PosX"), stack.getOrCreateTag().getDouble("PosY"), stack.getOrCreateTag().getDouble("PosZ"));
 
         list.add(Component.translatable("des.superbwarfare.monitor",
-                FormatTool.format1D(player.position().distanceTo(droneVec)), "m").withStyle(ChatFormatting.GRAY));
+                FormatTool.format1D(player.position().distanceTo(droneVec), "m")).withStyle(ChatFormatting.GRAY));
         list.add(Component.literal("X: " + FormatTool.format1D(droneVec.x) +
                 " Y: " + FormatTool.format1D(droneVec.y) +
                 " Z: " + FormatTool.format1D(droneVec.z)

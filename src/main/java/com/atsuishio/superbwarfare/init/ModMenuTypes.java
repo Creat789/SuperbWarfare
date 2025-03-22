@@ -15,16 +15,16 @@ public class ModMenuTypes {
 
     public static final DeferredRegister<MenuType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.MENU_TYPES, ModUtils.MODID);
 
-    public static final RegistryObject<MenuType<ReforgingTableMenu>> REFORGING_TABLE_MENU =
+    /*public static final RegistryObject<MenuType<ReforgingTableMenu>> REFORGING_TABLE_MENU =
             REGISTRY.register("reforging_table_menu",
-                    () -> IForgeMenuType.create((windowId, inv, data) -> new ReforgingTableMenu(windowId, inv)));
-    public static final RegistryObject<MenuType<ChargingStationMenu>> CHARGING_STATION_MENU =
+                    () -> IForgeMenuType.create((windowId, inv, data) -> new ReforgingTableMenu(windowId, inv)));*/
+   /* public static final RegistryObject<MenuType<ChargingStationMenu>> CHARGING_STATION_MENU =
             REGISTRY.register("charging_station_menu",
-                    () -> IForgeMenuType.create((windowId, inv, data) -> new ChargingStationMenu(windowId, inv)));
+                    () -> IForgeMenuType.create((windowId, inv, data) -> new ChargingStationMenu(windowId, inv)));*/
     public static final RegistryObject<MenuType<VehicleMenu>> VEHICLE_MENU =
             REGISTRY.register("vehicle_menu",
                     () -> IForgeMenuType.create((windowId, inv, data) -> new VehicleMenu(windowId, inv)));
-    public static final RegistryObject<MenuType<FuMO25Menu>> FUMO_25_MENU =
+    /*public static final RegistryObject<MenuType<FuMO25Menu>> FUMO_25_MENU =
             REGISTRY.register("fumo_25_menu",
-                    () -> IForgeMenuType.create((windowId, inv, data) -> new FuMO25Menu(windowId, inv)));
+                    () -> IForgeMenuType.create((windowId, inv, data) -> new FuMO25Menu(windowId, inv)));*/
 }

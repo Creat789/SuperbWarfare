@@ -95,7 +95,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
     };
 
     public FuMO25BlockEntity(BlockPos pPos, BlockState pBlockState) {
-        super(ModBlockEntities.FUMO_25.get(), pPos, pBlockState);
+        super(ModBlockEntities.CONTAINER.get(), pPos, pBlockState);
         this.energyHandler = LazyOptional.of(() -> new EnergyStorage(MAX_ENERGY));
     }
 

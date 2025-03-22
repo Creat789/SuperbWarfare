@@ -40,7 +40,7 @@ public class BoundingBoxManager {
             }
             return new AABB(headBox.minX * scale, headBox.minY * scale, headBox.minZ * scale, headBox.maxX * scale, headBox.maxY * scale, headBox.maxZ * scale);
         });
-        registerHeadshotBox(ModEntities.SENPAI.get(), new BasicHeadshotBox<>(8.0, 22.0));
+        //registerHeadshotBox(ModEntities.SENPAI.get(), new BasicHeadshotBox<>(8.0, 22.0));
         registerHeadshotBox(ModEntities.TARGET.get(), new BasicHeadshotBox<>(14.0, 20.0));
         registerHeadshotBox(EntityType.ENDERMAN, new BasicHeadshotBox<>(8.0, 38.0));
         registerHeadshotBox(EntityType.ZOMBIE, new ChildHeadshotBox<>(8.0, 26.0, 0.75, 0.5));

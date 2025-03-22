@@ -185,7 +185,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
 
         collideBlock();
-        if (this.getDeltaMovement().length() > 0.2) {
+        if (this.getDeltaMovement().length() > 0.125) {
             collideHardBlock();
         }
 

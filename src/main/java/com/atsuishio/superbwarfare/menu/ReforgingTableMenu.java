@@ -52,7 +52,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     }
 
     public ReforgingTableMenu(int pContainerId, Inventory inventory, Container container, ContainerLevelAccess pContainerLevelAccess) {
-        super(ModMenuTypes.REFORGING_TABLE_MENU.get(), pContainerId);
+        //super(ModMenuTypes.REFORGING_TABLE_MENU.get(), pContainerId);
+        super(null,0);
 
         checkContainerSize(container, 5);
 
@@ -149,8 +150,9 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.REFORGING_TABLE.get())
-                && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true);
+       /* return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.REFORGING_TABLE.get())
+                && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true);*/
+        return false;
     }
 
     @Override

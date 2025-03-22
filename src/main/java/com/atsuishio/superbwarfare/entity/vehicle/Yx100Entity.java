@@ -76,7 +76,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Yx100Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.YX_100.get(), world);
+        //this(ModEntities.YX_100.get(), world);
+        super(null, null);
+
     }
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {

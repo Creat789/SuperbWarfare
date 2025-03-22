@@ -14,13 +14,13 @@ public class ModBlocks {
 
     public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, ModUtils.MODID);
 
-    public static final RegistryObject<Block> SANDBAG = REGISTRY.register("sandbag",
-            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.SNARE).sound(SoundType.SAND).strength(10f, 20f)));
-    public static final RegistryObject<Block> BARBED_WIRE = REGISTRY.register("barbed_wire", BarbedWireBlock::new);
-    public static final RegistryObject<Block> JUMP_PAD = REGISTRY.register("jump_pad", JumpPadBlock::new);
-    public static final RegistryObject<Block> GALENA_ORE = REGISTRY.register("galena_ore",
-            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));
-    public static final RegistryObject<Block> DEEPSLATE_GALENA_ORE = REGISTRY.register("deepslate_galena_ore",
+   /* public static final RegistryObject<Block> SANDBAG = REGISTRY.register("sandbag",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.SNARE).sound(SoundType.SAND).strength(10f, 20f)));*/
+    //public static final RegistryObject<Block> BARBED_WIRE = REGISTRY.register("barbed_wire", BarbedWireBlock::new);
+    //public static final RegistryObject<Block> JUMP_PAD = REGISTRY.register("jump_pad", JumpPadBlock::new);
+   /* public static final RegistryObject<Block> GALENA_ORE = REGISTRY.register("galena_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));*/
+   /* public static final RegistryObject<Block> DEEPSLATE_GALENA_ORE = REGISTRY.register("deepslate_galena_ore",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> SCHEELITE_ORE = REGISTRY.register("scheelite_ore",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));
@@ -41,9 +41,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> SILVER_BLOCK = REGISTRY.register("silver_block",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
-            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));*/
     public static final RegistryObject<Block> CONTAINER = REGISTRY.register("container", ContainerBlock::new);
-    public static final RegistryObject<Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
-    public static final RegistryObject<Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", CreativeChargingStationBlock::new);
-    public static final RegistryObject<Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
+    //public static final RegistryObject<Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
+    //public static final RegistryObject<Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", CreativeChargingStationBlock::new);
+    //public static final RegistryObject<Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
 }

@@ -65,9 +65,9 @@ public class ChargingStationBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (!pLevel.isClientSide) {
+        /*if (!pLevel.isClientSide) {
             return createTickerHelper(pBlockEntityType, ModBlockEntities.CHARGING_STATION.get(), ChargingStationBlockEntity::serverTick);
-        }
+        }*/
         return null;
     }
 
