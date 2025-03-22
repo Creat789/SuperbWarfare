@@ -1,5 +1,6 @@
 {
-  "CustomZoom": 3.75,
+  "MinZoom": 1.25,
+  "MaxZoom": 6,
   "Spread": 8,
   "RecoilX": 0.01,
   "RecoilY": 0.038,
@@ -8,7 +9,7 @@
   "Velocity": 36,
   "Magazine": 3,
   "BoltActionTime": 37,
-  "Weight": 10,
+  "Weight": 13,
   "NormalReloadTime": 63,
   "EmptyReloadTime": 92,
   "BypassesArmor": 1,

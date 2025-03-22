@@ -68,7 +68,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.TRANSCRIPT);
         simpleItem(ModItems.RAW_SILVER);
         simpleItem(ModItems.SILVER_INGOT);
-        simpleItem(ModItems.CROWBAR);
+        handheldItem(ModItems.CROWBAR);
+        handheldItem(ModItems.DEFUSER);
         simpleItem(ModItems.FIRING_PARAMETERS);
         simpleItem(ModItems.BEAM_TEST);
         simpleItem(ModItems.HANDGUN_AMMO);
@@ -189,4 +190,8 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("layer0", ModUtils.loc("item/cannon_blueprint"));
     }
 
+    private ItemModelBuilder handheldItem(RegistryObject<Item> item) {
+        return withExistingParent(item.getId().getPath(), new ResourceLocation("item/handheld"))
+                .texture("layer0", ModUtils.loc("item/" + item.getId().getPath()));
+    }
 }

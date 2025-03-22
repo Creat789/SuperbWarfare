@@ -74,6 +74,8 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    mavenLocal()
+
     maven {
         url = "https://maven.theillusivec4.top/"
     }

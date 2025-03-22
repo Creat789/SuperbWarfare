@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
@@ -61,7 +62,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = VehicleConfig.MLE1934_HP.get();
 
     public Mle1934Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.MLE_1934.get(), world);
@@ -93,6 +93,11 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .icon(ModUtils.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(10, 1.3, 0);
     }
 
     @Override
@@ -207,6 +212,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
                 .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .multiply(10f, ModDamageTypes.VEHICLE_STRIKE)
+                .custom((source, damage) -> getSourceAngle(source, 1f) * damage)
                 .reduce(8);
     }
 
@@ -293,31 +299,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 consumed = InventoryTool.consumeItem(player.getInventory().items, ammo, 2);
             }
 
-            float hitDamage;
-            float explosionRadius;
-            float explosionDamage;
-            float fireProbability;
-            int fireTime;
-            int durability;
             boolean salvoShoot = consumed == 2;
-
-            if (getWeaponIndex(0) == 1) {
-                // HE
-                hitDamage = VehicleConfig.MLE1934_HE_DAMAGE.get();
-                explosionRadius = VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get();
-                explosionDamage = VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get();
-                fireProbability = 0.24F;
-                fireTime = 5;
-                durability = 1;
-            } else {
-                // AP
-                hitDamage = VehicleConfig.MLE1934_AP_DAMAGE.get();
-                explosionRadius = VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get();
-                explosionDamage = VehicleConfig.MLE1934_AP_EXPLOSION_DAMAGE.get();
-                fireProbability = 0;
-                fireTime = 0;
-                durability = 70;
-            }
 
             float yRot = this.getYRot();
             if (yRot < 0) {
@@ -496,7 +478,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.MLE1934_HP.get();
     }
 
     @Override

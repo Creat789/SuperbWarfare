@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // From Immersive_Aircraft
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin<T extends LivingEntity> {
+
     @Inject(method = "setupRotations", at = @At("TAIL"))
     public void render(T entity, PoseStack matrices, float animationProgress, float bodyYaw, float tickDelta, CallbackInfo ci) {
         if (entity.getRootVehicle() != entity && entity.getRootVehicle() instanceof Ah6Entity ah6Entity) {

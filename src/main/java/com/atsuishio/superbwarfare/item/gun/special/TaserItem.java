@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.renderer.item.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
-import com.atsuishio.superbwarfare.entity.projectile.TaserBulletProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
@@ -295,7 +295,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.TASER_FIRE_3P.get(), SoundSource.PLAYERS, 1, 1);
 
             var level = serverPlayer.level();
-            TaserBulletProjectileEntity taserBulletProjectile = new TaserBulletProjectileEntity(player, level,
+            TaserBulletEntity taserBulletProjectile = new TaserBulletEntity(player, level,
                     (float) GunsTool.getGunDoubleTag(stack, "Damage", 0), volt, wireLength);
 
             taserBulletProjectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());

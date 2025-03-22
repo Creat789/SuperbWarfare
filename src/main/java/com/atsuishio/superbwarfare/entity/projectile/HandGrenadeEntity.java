@@ -20,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -36,7 +35,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class HandGrenadeEntity extends ThrowableItemProjectile implements GeoEntity {
+public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
+
     private int fuse = 100;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -46,12 +46,12 @@ public class HandGrenadeEntity extends ThrowableItemProjectile implements GeoEnt
     }
 
     public HandGrenadeEntity(LivingEntity entity, Level level, int fuse) {
-        super(ModEntities.HAND_GRENADE_ENTITY.get(), entity, level);
+        super(ModEntities.HAND_GRENADE.get(), entity, level);
         this.fuse = fuse;
     }
 
     public HandGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.HAND_GRENADE_ENTITY.get(), level);
+        this(ModEntities.HAND_GRENADE.get(), level);
     }
 
     @Override

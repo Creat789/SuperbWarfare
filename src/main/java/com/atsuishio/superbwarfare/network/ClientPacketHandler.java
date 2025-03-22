@@ -7,10 +7,7 @@ import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
-import com.atsuishio.superbwarfare.network.message.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.network.message.ContainerDataMessage;
-import com.atsuishio.superbwarfare.network.message.GunsDataMessage;
-import com.atsuishio.superbwarfare.network.message.RadarMenuOpenMessage;
+import com.atsuishio.superbwarfare.network.message.*;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import net.minecraft.client.CameraType;
@@ -81,6 +78,17 @@ public class ClientPacketHandler {
             if (player == null) return;
 
             Minecraft.getInstance().options.setCameraType(Objects.requireNonNullElse(ClientEventHandler.lastCameraType, CameraType.FIRST_PERSON));
+        }
+    }
+
+    public static void handleClientSyncMotion(ClientMotionSyncMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            var level = Minecraft.getInstance().level;
+            if (level == null) return;
+            Entity entity = level.getEntity(message.id);
+            if (entity != null) {
+                entity.lerpMotion(message.x, message.y, message.z);
+            }
         }
     }
 }

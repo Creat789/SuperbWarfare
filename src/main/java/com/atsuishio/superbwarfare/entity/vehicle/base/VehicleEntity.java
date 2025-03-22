@@ -36,6 +36,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
@@ -61,12 +62,12 @@ import java.util.function.Function;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public abstract class VehicleEntity extends Entity {
-    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
-    protected static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
 
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> DELTA_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    protected static final EntityDataAccessor<IntList> SELECTED_WEAPON = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
+    public static final EntityDataAccessor<IntList> SELECTED_WEAPON = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
 
     public VehicleWeapon[][] availableWeapons;
 
@@ -82,7 +83,6 @@ public abstract class VehicleEntity extends Entity {
     public int lastHurtTick;
     public int repairCoolDown = maxRepairCoolDown();
     public boolean crash;
-
 
     public float turretYRot;
     public float turretXRot;
@@ -208,6 +208,16 @@ public abstract class VehicleEntity extends Entity {
         return orderedPassengers.indexOf(entity);
     }
 
+    /**
+     * 第三人称视角相机位置重载，返回null表示不进行修改
+     *
+     * @param seatIndex 座位索引
+     */
+    @Nullable
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int seatIndex) {
+        return null;
+    }
+
     public float getRoll() {
         return roll;
     }
@@ -297,7 +307,7 @@ public abstract class VehicleEntity extends Entity {
         if (player.getVehicle() == this) return InteractionResult.PASS;
 
         ItemStack stack = player.getMainHandItem();
-        if (player.isShiftKeyDown() && stack.is(ModItems.CROWBAR.get()) && this.getFirstPassenger() == null) {
+        if (player.isShiftKeyDown() && stack.is(ModItems.CROWBAR.get()) && this.getPassengers().isEmpty()) {
             ItemStack container = ContainerBlockItem.createInstance(this);
             if (!player.addItem(container)) {
                 player.drop(container, false);
@@ -334,8 +344,7 @@ public abstract class VehicleEntity extends Entity {
         return InteractionResult.PASS;
     }
 
-
-    //将有炮塔的载具驾驶员设置为炮塔角度
+    // 将有炮塔的载具驾驶员设置为炮塔角度
     public void setDriverAngle(Player player) {
         if (this instanceof LandArmorEntity landArmorEntity) {
             player.xRotO = -(float) getXRotFromVector(landArmorEntity.getBarrelVec(1));
@@ -423,18 +432,30 @@ public abstract class VehicleEntity extends Entity {
                 .reduce(5, ModDamageTypes.VEHICLE_STRIKE);
     }
 
+    public float getSourceAngle(DamageSource source, float multiply) {
+        Entity attacker = source.getDirectEntity();
+        if (attacker == null) {
+            attacker = source.getEntity();
+        }
+
+        if (attacker != null) {
+            float angle = (float) java.lang.Math.abs(VectorTool.calculateAngle(this.position().vectorTo(attacker.position()), this.getViewVector(1)));
+            return java.lang.Math.max(1f + multiply * ((angle - 90) / 90), 0.5f);
+        }
+
+        return 1;
+    }
+
     public void heal(float pHealAmount) {
         if (this.level() instanceof ServerLevel) {
             this.setHealth(this.getHealth() + pHealAmount);
         }
-
     }
 
     public void onHurt(float pHealAmount, Entity attacker, boolean send) {
         if (this.level() instanceof ServerLevel) {
             var holder = Holder.direct(ModSounds.INDICATION_VEHICLE.get());
             if (attacker instanceof ServerPlayer player && pHealAmount > 0 && this.getHealth() > 0 && send && !(this instanceof DroneEntity)) {
-
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getEyeY(), player.getZ(), 0.25f + (2.75f * pHealAmount / getMaxHealth()), random.nextFloat() * 0.1f + 0.9f, player.level().random.nextLong()));
                 ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(3, 5));
             }
@@ -571,7 +592,19 @@ public abstract class VehicleEntity extends Entity {
             this.entityData.set(LAST_DRIVER_UUID, getFirstPassenger().getStringUUID());
         }
 
+        clearArrow();
         this.refreshDimensions();
+    }
+
+    public void clearArrow() {
+        List<Entity> list = this.level().getEntities(this, this.getBoundingBox().inflate(0F, 0.5F, 0F));
+        if (!list.isEmpty()) {
+            for (Entity entity : list) {
+                if (entity instanceof AbstractArrow) {
+                    entity.discard();
+                }
+            }
+        }
     }
 
     public void lowHealthWarning() {
@@ -619,13 +652,10 @@ public abstract class VehicleEntity extends Entity {
         if (driver != null) {
             float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
 
-            float diffY;
-            float diffX;
+            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot() + 0.05f);
+            float diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
 
-            diffY = Mth.wrapDegrees(turretAngle - getTurretYRot() + 0.05f);
-            diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
-
-            turretTurnSound(diffX, diffY, 0.95f);
+            this.turretTurnSound(diffX, diffY, 0.95f);
 
             float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
             float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
@@ -704,12 +734,12 @@ public abstract class VehicleEntity extends Entity {
     }
 
     // From Immersive_Aircraft
-    public Matrix4f getVehicleTransform() {
+    public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) getX(), (float) getY(), (float) getZ());
-        transform.rotate(Axis.YP.rotationDegrees(-getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
@@ -885,4 +915,5 @@ public abstract class VehicleEntity extends Entity {
     public void setGunXRot(float pGunXRot) {
         this.gunXRot = pGunXRot;
     }
+
 }

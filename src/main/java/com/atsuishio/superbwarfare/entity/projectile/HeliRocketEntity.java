@@ -39,22 +39,23 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEntity {
+public class HeliRocketEntity extends FastThrowableProjectile implements GeoEntity {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float damage = 140f;
-    private float explosion_damage = 60f;
-    private float explosion_radius = 5f;
+    private float explosionDamage = 60f;
+    private float explosionRadius = 5f;
 
     public HeliRocketEntity(EntityType<? extends HeliRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public HeliRocketEntity(LivingEntity entity, Level level, float damage, float explosion_damage, float explosion_radius) {
+    public HeliRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.HELI_ROCKET.get(), entity, level);
         this.damage = damage;
-        this.explosion_damage = explosion_damage;
-        this.explosion_radius = explosion_radius;
+        this.explosionDamage = explosionDamage;
+        this.explosionRadius = explosionRadius;
     }
 
     public HeliRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -78,7 +79,6 @@ public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEnti
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-
         Entity entity = result.getEntity();
         if (entity == this.getOwner() || entity == this.getVehicle()) return;
         if (this.getOwner() instanceof LivingEntity living) {
@@ -99,7 +99,7 @@ public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEnti
             if (this.level() instanceof ServerLevel) {
                 causeRocketExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        entity, this.explosion_damage, this.explosion_radius, 1);
+                        entity, this.explosionDamage, this.explosionRadius, 1);
             }
         }
 
@@ -113,7 +113,7 @@ public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEnti
             if (this.level() instanceof ServerLevel) {
                 causeRocketExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosion_damage, this.explosion_radius, 1);
+                        this, this.explosionDamage, this.explosionRadius, 1);
             }
         }
 
@@ -141,7 +141,7 @@ public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEnti
             if (this.level() instanceof ServerLevel) {
                 causeRocketExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosion_damage, this.explosion_radius, 1);
+                        this, this.explosionDamage, this.explosionRadius, 1);
             }
             this.discard();
         }
@@ -164,13 +164,6 @@ public class HeliRocketEntity extends ThrowableItemProjectile implements GeoEnti
     @Override
     protected float getGravity() {
         return 0.002f;
-    }
-
-    public String getSyncedAnimation() {
-        return null;
-    }
-
-    public void setAnimation(String animation) {
     }
 
     @Override

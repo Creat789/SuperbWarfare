@@ -221,8 +221,8 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
 
         stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(consumer -> {
             if (consumer.getEnergyStored() < consumer.getMaxEnergyStored()) {
-                consumer.receiveEnergy(Math.min(CHARGE_OTHER_SPEED, handler.getEnergyStored()), false);
-                handler.extractEnergy(Math.min(CHARGE_OTHER_SPEED, handler.getEnergyStored()), false);
+                int charged = consumer.receiveEnergy(Math.min(CHARGE_OTHER_SPEED, handler.getEnergyStored()), false);
+                handler.extractEnergy(Math.min(charged, handler.getEnergyStored()), false);
             }
         });
         this.setChanged();

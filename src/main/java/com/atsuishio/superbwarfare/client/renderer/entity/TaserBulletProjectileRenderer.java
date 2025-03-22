@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.TaserBulletProjectileModel;
-import com.atsuishio.superbwarfare.entity.projectile.TaserBulletProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -13,18 +13,18 @@ import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBulletProjectileEntity> {
+public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBulletEntity> {
     public TaserBulletProjectileRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new TaserBulletProjectileModel());
     }
 
     @Override
-    public RenderType getRenderType(TaserBulletProjectileEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+    public RenderType getRenderType(TaserBulletEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
-    public void preRender(PoseStack poseStack, TaserBulletProjectileEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
+    public void preRender(PoseStack poseStack, TaserBulletEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
                           float blue, float alpha) {
         float scale = 1f;
         this.scaleHeight = scale;
@@ -33,7 +33,7 @@ public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBullet
     }
 
     @Override
-    public void render(TaserBulletProjectileEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(TaserBulletEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
@@ -42,7 +42,7 @@ public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBullet
     }
 
     @Override
-    protected float getDeathMaxRotation(TaserBulletProjectileEntity entityLivingBaseIn) {
+    protected float getDeathMaxRotation(TaserBulletEntity entityLivingBaseIn) {
         return 0.0F;
     }
 }

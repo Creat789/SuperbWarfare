@@ -42,7 +42,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class WgMissileEntity extends ThrowableItemProjectile implements GeoEntity {
+public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -187,9 +187,6 @@ public class WgMissileEntity extends ThrowableItemProjectile implements GeoEntit
         return 0;
     }
 
-    public void setAnimation(String animation) {
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
@@ -198,5 +195,10 @@ public class WgMissileEntity extends ThrowableItemProjectile implements GeoEntit
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public boolean shouldSyncMotion() {
+        return true;
     }
 }

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.ArmorPlate;
 import com.atsuishio.superbwarfare.item.BatteryItem;
+import com.atsuishio.superbwarfare.item.C4Bomb;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -107,6 +108,10 @@ public class ModTabs {
                         ModItems.AMMO.getEntries().forEach(registryObject -> {
                             if (registryObject.get() != ModItems.POTION_MORTAR_SHELL.get()) {
                                 output.accept(registryObject.get());
+
+                                if (registryObject.get() == ModItems.C4_BOMB.get()) {
+                                    output.accept(C4Bomb.makeInstance());
+                                }
                             }
                         });
 

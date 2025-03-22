@@ -15,7 +15,7 @@ public class ModEntityRenderers {
        // event.registerEntityRenderer(ModEntities.SENPAI.get(), SenpaiRenderer::new);
         event.registerEntityRenderer(ModEntities.CLAYMORE.get(), ClaymoreRenderer::new);
         event.registerEntityRenderer(ModEntities.C_4.get(), C4Renderer::new);
-        event.registerEntityRenderer(ModEntities.TASER_BULLET_PROJECTILE.get(), TaserBulletProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.TASER_BULLET.get(), TaserBulletProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GUN_GRENADE.get(), GunGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.TARGET.get(), TargetRenderer::new);
         event.registerEntityRenderer(ModEntities.RPG_ROCKET.get(), RpgRocketRenderer::new);
@@ -25,7 +25,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.PROJECTILE.get(), ProjectileEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.MK_42.get(), Mk42Renderer::new);
         event.registerEntityRenderer(ModEntities.DRONE.get(), DroneRenderer::new);
-        event.registerEntityRenderer(ModEntities.HAND_GRENADE_ENTITY.get(), HandGrenadeRenderer::new);
+        event.registerEntityRenderer(ModEntities.HAND_GRENADE.get(), HandGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.RGO_GRENADE.get(), RgoGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.MLE_1934.get(), Mle1934Renderer::new);
         event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), JavelinMissileRenderer::new);

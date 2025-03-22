@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -427,7 +428,7 @@ public class ClientEventHandler {
 
     public static void gunPartMove(float times) {
         chamberRot = Mth.lerp(0.07 * times, chamberRot, 0);
-        actionMove = Mth.lerp(0.2 * times, actionMove, 0);
+        actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
     public static void handleClientShoot() {
@@ -880,8 +881,8 @@ public class ClientEventHandler {
         } else {
             zoomTime = Mth.clamp(zoomTime - 0.04 * speed * times, 0, 1);
         }
-        zoomPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(zoomTime, 2) - 1, 2)) + 0.5;
-        zoomPosZ = -Math.pow(2 * zoomTime - 1, 2) + 1;
+        zoomPos = AnimationCurves.EASE_IN_OUT_QUINT.apply(zoomTime);
+        zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime);
     }
 
     private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {

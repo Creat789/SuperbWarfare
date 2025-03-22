@@ -36,7 +36,7 @@ public class ExplosionConfig {
         EXPLOSION_PENETRATION_RATIO = builder.defineInRange("explosion_penetration_ratio", 15, 0, 100);
 
         builder.comment("Set true to allow Explosion to destroy blocks");
-        EXPLOSION_DESTROY = builder.define("explosion_destroy", false);
+        EXPLOSION_DESTROY = builder.define("explosion_destroy", true);
 
         builder.push("RGO Grenade");
 

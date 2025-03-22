@@ -58,5 +58,10 @@ public class SbwJEIPlugin implements IModPlugin {
 
             return stringBuilder.toString();
         });
+
+        registration.registerSubtypeInterpreter(ModItems.C4_BOMB.get(), ((ingredient, context) -> {
+            if (ingredient.getTag() == null) return IIngredientSubtypeInterpreter.NONE;
+            return String.valueOf(ingredient.getTag().getBoolean("Control"));
+        }));
     }
 }

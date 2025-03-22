@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
@@ -61,9 +62,8 @@ import java.util.Comparator;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
-    public static final float MAX_HEALTH = VehicleConfig.LAV_150_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.LAV_150_MAX_ENERGY.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public Lav150Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.LAV_150.get(), world);
     }
@@ -91,6 +91,11 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                                 .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(2.75, 1, 0);
     }
 
     @Override
@@ -137,6 +142,13 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
                 .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .multiply(10f, ModDamageTypes.VEHICLE_STRIKE)
+                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof DroneEntity) {
+                        return 1.5f * damage;
+                    }
+                    return damage;
+                })
                 .reduce(7);
     }
 
@@ -229,7 +241,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        Matrix4f transform = getBarrelTransform();
+        Matrix4f transform = getBarrelTransform(1);
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
             float x = -0.0234375f;
@@ -264,6 +276,9 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                     ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(6, 5, 9, this.getX(), this.getEyeY(), this.getZ()));
                 }
             }
+
+            this.entityData.set(CANNON_RECOIL_TIME, 40);
+            this.entityData.set(YAW, getTurretYRot());
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 7);
             this.entityData.set(FIRE_ANIM, 3);
@@ -385,8 +400,8 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             return;
         }
 
-        Matrix4f transform = getTurretTransform();
-        Matrix4f transformV = getVehicleTransform();
+        Matrix4f transform = getTurretTransform(1);
+        Matrix4f transformV = getVehicleTransform(1);
 
         float x = 0.36f;
         float y = -0.3f;
@@ -409,8 +424,14 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return 5;
     }
 
-    public Matrix4f getBarrelTransform() {
-        Matrix4f transformT = getTurretTransform();
+    public Vec3 driverZoomPos(float ticks) {
+        Matrix4f transform = getTurretTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0, 0, 0.56f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
         float x = 0f;
         float y = 0.33795f;
         float z = 0.825f;
@@ -418,18 +439,18 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         Matrix4f transform = new Matrix4f();
         transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getTurretXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, turretXRotO, getTurretXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
-    public Matrix4f getTurretTransform() {
+    public Matrix4f getTurretTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) getX(), (float) getY() + 2.4f, (float) getZ());
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 2.4f, getY() + 2.4f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
@@ -485,12 +506,12 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.LAV_150_MAX_ENERGY.get();
     }
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.LAV_150_HP.get();
     }
 
     @Override

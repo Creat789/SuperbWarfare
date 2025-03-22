@@ -2915,5 +2915,37 @@
         "stream": false
       }
     ]
+  },
+  "c4_beep": {
+    "sounds": [
+      {
+        "name": "superbwarfare:c4/c4_beep",
+        "stream": false
+      }
+    ]
+  },
+  "c4_final": {
+    "sounds": [
+      {
+        "name": "superbwarfare:c4/c4_final",
+        "stream": false
+      }
+    ]
+  },
+  "c4_throw": {
+    "sounds": [
+      {
+        "name": "superbwarfare:c4/c4_throw",
+        "stream": false
+      }
+    ]
+  },
+  "c4_detonator_click": {
+    "sounds": [
+      {
+        "name": "superbwarfare:c4/c4_detonator_click",
+        "stream": false
+      }
+    ]
   }
 }

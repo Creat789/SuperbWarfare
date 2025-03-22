@@ -15,6 +15,8 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
+import com.atsuishio.superbwarfare.tools.animation.AnimationTimer;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -64,13 +66,12 @@ public class VehicleHudOverlay {
     private static final ResourceLocation SELECTED = ModUtils.loc("textures/screens/vehicle_weapon/selected.png");
     private static final ResourceLocation NUMBER = ModUtils.loc("textures/screens/vehicle_weapon/number.png");
 
-    private static final long[] weaponSlotUpdateTime = new long[9];
-    private static boolean lastTimeRenderingWeapons = false;
-    private static int lastTimeWeaponIndex = -1;
-    private static int lastTimeRenderWeaponIndex = -1;
-    private static long weaponIndexUpdateTime = 0;
-
     public static final int ANIMATION_TIME = 300;
+    private static final AnimationTimer[] weaponSlotsTimer = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
+    private static boolean wasRenderingWeapons = false;
+    private static int oldWeaponIndex = 0;
+    private static int oldRenderWeaponIndex = 0;
+    private static final AnimationTimer weaponIndexUpdateTimer = new AnimationTimer(ANIMATION_TIME).animation(AnimationCurves.EASE_OUT_CIRC);
 
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -80,7 +81,7 @@ public class VehicleHudOverlay {
         Player player = Minecraft.getInstance().player;
 
         if (!shouldRenderHud(player)) {
-            lastTimeRenderingWeapons = false;
+            wasRenderingWeapons = false;
             return;
         }
 
@@ -154,7 +155,7 @@ public class VehicleHudOverlay {
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
             poseStack.pushPose();
 
-            poseStack.translate(Mth.clamp(-8 * ClientEventHandler.turnRot[1], -10, 10), Mth.clamp(-8 * ClientEventHandler.turnRot[0], -10, 10) - 0.3 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0);
+            poseStack.translate(0.2 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0 - 0.3 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0);
             poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.5f * ClientEventHandler.cameraRoll), w / 2f, h / 2f, 0);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
@@ -455,8 +456,8 @@ public class VehicleHudOverlay {
     private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h) {
         if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
 
-        var temp = lastTimeRenderingWeapons;
-        lastTimeRenderingWeapons = false;
+        var temp = wasRenderingWeapons;
+        wasRenderingWeapons = false;
 
         Player player = Minecraft.getInstance().player;
         assert player != null;
@@ -470,26 +471,33 @@ public class VehicleHudOverlay {
         int weaponIndex = weaponVehicle.getWeaponIndex(index);
         if (weaponIndex == -1) return;
 
-        lastTimeRenderingWeapons = temp;
+        wasRenderingWeapons = temp;
 
         var currentTime = System.currentTimeMillis();
-        // 若上一帧未在渲染武器信息，则初始化动画相关变量
-        if (!lastTimeRenderingWeapons) {
-            lastTimeWeaponIndex = weaponIndex;
-            lastTimeRenderWeaponIndex = weaponIndex;
 
-            weaponSlotUpdateTime[weaponIndex] = currentTime;
-            weaponIndexUpdateTime = currentTime;
+        // 若上一帧未在渲染武器信息，则初始化动画相关变量
+        if (!wasRenderingWeapons) {
+            weaponSlotsTimer[weaponIndex].beginForward(currentTime);
+
+            if (oldWeaponIndex != weaponIndex) {
+                weaponSlotsTimer[oldWeaponIndex].endBackward(currentTime);
+
+                oldWeaponIndex = weaponIndex;
+                oldRenderWeaponIndex = weaponIndex;
+            }
+
+            weaponIndexUpdateTimer.beginForward(currentTime);
         }
 
         // 切换武器时，更新上一个武器槽位和当前武器槽位的动画信息
-        if (weaponIndex != lastTimeWeaponIndex) {
-            weaponSlotUpdateTime[weaponIndex] = currentTime;
-            weaponSlotUpdateTime[lastTimeWeaponIndex] = currentTime;
+        if (weaponIndex != oldWeaponIndex) {
+            weaponSlotsTimer[weaponIndex].forward(currentTime);
+            weaponSlotsTimer[oldWeaponIndex].backward(currentTime);
 
-            lastTimeRenderWeaponIndex = lastTimeWeaponIndex;
-            lastTimeWeaponIndex = weaponIndex;
-            weaponIndexUpdateTime = currentTime;
+            oldRenderWeaponIndex = oldWeaponIndex;
+            oldWeaponIndex = weaponIndex;
+
+            weaponIndexUpdateTimer.beginForward(currentTime);
         }
 
         var pose = guiGraphics.pose();
@@ -512,40 +520,34 @@ public class VehicleHudOverlay {
             pose.pushPose();
 
             // 相对于最左边的偏移量
-            float startXDiff;
+            float xOffset;
             // 向右偏移的最长长度
-            var xDiff = 35;
+            var maxXOffset = 35;
 
-            var currentWeaponUpdateTime = weaponSlotUpdateTime[i];
-            var progress = easeOutCirc(currentWeaponUpdateTime, currentWeaponUpdateTime + ANIMATION_TIME, currentTime);
+            var currentSlotTimer = weaponSlotsTimer[i];
+            var progress = currentSlotTimer.getProgress(currentTime);
 
-            if (weaponIndex != i) {
-                // 未选中
-                RenderSystem.setShaderColor(1, 1, 1,
-                        Mth.lerp(progress, 1, 0.5f)
-                );
-                startXDiff = Mth.lerp(progress, 0, xDiff);
-            } else {
-                // 选中
-                RenderSystem.setShaderColor(1, 1, 1, Mth.lerp(progress, 0.2f, 1));
+            RenderSystem.setShaderColor(1, 1, 1, Mth.lerp(progress, 0.2f, 1));
+            xOffset = Mth.lerp(progress, maxXOffset, 0);
 
-                startXDiff = Mth.lerp(progress, xDiff, 0);
+            // 当前选中武器
+            if (weaponIndex == i) {
                 var startY = Mth.lerp(progress,
-                        h - (weapons.size() - 1 - lastTimeRenderWeaponIndex) * 18 - 16,
+                        h - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
                         h - (weapons.size() - 1 - weaponIndex) * 18 - 16
                 );
 
                 preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
                 if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof HeliRocketWeapon)) {
-                    preciseBlit(guiGraphics, NUMBER, w - 28 + startXDiff, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
+                    preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
                     renderNumber(guiGraphics, weaponVehicle.getAmmoCount(player), weapon instanceof LaserWeapon,
-                            w - 20 + startXDiff, h - frameIndex * 18 - 15.5f, 0.25f);
+                            w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }
 
-            preciseBlit(guiGraphics, frame, w - 85 + startXDiff, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
-            preciseBlit(guiGraphics, weapon.icon, w - 85 + startXDiff, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             pose.popPose();
 
@@ -556,21 +558,10 @@ public class VehicleHudOverlay {
         pose.popPose();
 
         // 切换武器光标动画播放结束后，更新上次选择槽位
-        if (lastTimeWeaponIndex != lastTimeRenderWeaponIndex && currentTime - weaponIndexUpdateTime > ANIMATION_TIME) {
-            lastTimeRenderWeaponIndex = lastTimeWeaponIndex;
+        if (oldWeaponIndex != oldRenderWeaponIndex && weaponIndexUpdateTimer.finished(currentTime)) {
+            oldRenderWeaponIndex = oldWeaponIndex;
         }
-        lastTimeRenderingWeapons = true;
-    }
-
-    private static float easeOutCirc(long start, long end, long current) {
-        double t = (double) (current - start) / (double) (end - start);
-
-        if (t < 0) {
-            return 0;
-        } else if (t > 1) {
-            return 1;
-        }
-        return (float) Math.sqrt(1 - java.lang.Math.pow(t - 1, 2d));
+        wasRenderingWeapons = true;
     }
 
     private static void renderNumber(GuiGraphics guiGraphics, int number, boolean percent, float x, float y, float scale) {

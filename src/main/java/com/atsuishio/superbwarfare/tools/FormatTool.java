@@ -44,4 +44,12 @@ public class FormatTool {
     public static String format1DZ(double num, String str) {
         return DECIMAL_FORMAT_1Z.format(num) + str;
     }
+
+    public static String format1DZZ(double num) {
+        return format1DZZ(num, "");
+    }
+
+    public static String format1DZZ(double num, String str) {
+        return DECIMAL_FORMAT_1ZZ.format(num) + str;
+    }
 }

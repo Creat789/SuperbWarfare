@@ -40,7 +40,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 @OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier.class)
-public class TaserBulletProjectileEntity extends AbstractArrow implements GeoEntity {
+public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
 
     private float damage = 1f;
     private int volt = 0;
@@ -49,19 +49,19 @@ public class TaserBulletProjectileEntity extends AbstractArrow implements GeoEnt
     public static final ItemStack PROJECTILE_ITEM = new ItemStack(Items.AIR);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public TaserBulletProjectileEntity(PlayMessages.SpawnEntity packet, Level world) {
-        super(ModEntities.TASER_BULLET_PROJECTILE.get(), world);
+    public TaserBulletEntity(PlayMessages.SpawnEntity packet, Level world) {
+        super(ModEntities.TASER_BULLET.get(), world);
         this.pickup = AbstractArrow.Pickup.DISALLOWED;
     }
 
-    public TaserBulletProjectileEntity(LivingEntity entity, Level level, float damage, int volt, int wireLength) {
-        super(ModEntities.TASER_BULLET_PROJECTILE.get(), entity, level);
+    public TaserBulletEntity(LivingEntity entity, Level level, float damage, int volt, int wireLength) {
+        super(ModEntities.TASER_BULLET.get(), entity, level);
         this.damage = damage;
         this.volt = volt;
         this.wireLength = wireLength;
     }
 
-    public TaserBulletProjectileEntity(EntityType<? extends TaserBulletProjectileEntity> type, Level world) {
+    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
@@ -69,6 +69,10 @@ public class TaserBulletProjectileEntity extends AbstractArrow implements GeoEnt
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public void playerTouch(Player pEntity) {
     }
 
     @Override

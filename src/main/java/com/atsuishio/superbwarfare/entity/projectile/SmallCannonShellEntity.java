@@ -20,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -38,7 +37,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SmallCannonShellEntity extends ThrowableItemProjectile implements GeoEntity {
+public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity {
+
     private float damage = 40.0f;
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
@@ -50,7 +50,7 @@ public class SmallCannonShellEntity extends ThrowableItemProjectile implements G
     }
 
     public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.GUN_GRENADE.get(), entity, level);
+        super(ModEntities.SMALL_CANNON_SHELL.get(), entity, level);
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
@@ -162,7 +162,7 @@ public class SmallCannonShellEntity extends ThrowableItemProjectile implements G
         }
 
         if (onGround()) {
-            this.setDeltaMovement(0,0,0);
+            this.setDeltaMovement(0, 0, 0);
         }
 
         if (this.tickCount > 200 || this.isInWater()) {
@@ -183,5 +183,4 @@ public class SmallCannonShellEntity extends ThrowableItemProjectile implements G
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
 }

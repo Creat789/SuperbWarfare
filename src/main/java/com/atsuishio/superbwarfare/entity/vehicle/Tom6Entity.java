@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -49,8 +50,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = VehicleConfig.TOM_6_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.TOM_6_MAX_ENERGY.get();
 
     public Tom6Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.TOM_6.get(), world);
@@ -59,6 +58,11 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
         this.setMaxUpStep(0.5f);
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(4, 1, 0);
     }
 
     @Override
@@ -197,7 +201,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             if (upInputDown && !onGround() && entityData.get(MELON)) {
                 entityData.set(MELON, false);
 
-                Matrix4f transform = getVehicleTransform();
+                Matrix4f transform = getVehicleTransform(1);
                 Vector4f worldPosition;
                 worldPosition = transformPosition(transform, 0, -0.2f, 0);
 
@@ -252,7 +256,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             return;
         }
 
-        Matrix4f transform = getVehicleTransform();
+        Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
         float y = 0.45f;
@@ -284,12 +288,12 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public Matrix4f getVehicleTransform() {
+    public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) getX(), (float) getY() + 0.5f, (float) getZ());
-        transform.rotate(Axis.YP.rotationDegrees(-getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
@@ -336,12 +340,12 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.TOM_6_HP.get();
     }
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.TOM_6_MAX_ENERGY.get();
     }
 
     @Override

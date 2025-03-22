@@ -20,7 +20,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -37,7 +36,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RgoGrenadeEntity extends ThrowableItemProjectile implements GeoEntity {
+public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
+
     private int fuse = 80;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

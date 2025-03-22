@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -56,8 +53,6 @@ import java.util.Comparator;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class SpeedboatEntity extends ContainerMobileVehicleEntity implements GeoEntity, ArmedVehicleEntity, WeaponVehicleEntity, LandArmorEntity {
-    public static final float MAX_HEALTH = VehicleConfig.SPEEDBOAT_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.SPEEDBOAT_MAX_ENERGY.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SpeedboatEntity(PlayMessages.SpawnEntity packet, Level world) {
@@ -79,6 +74,11 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                                 .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(3, 1, 0);
     }
 
     @Override
@@ -188,22 +188,23 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     /**
      * 机枪塔开火
      */
+
+    public Vec3 shootPos(float ticks) {
+        Matrix4f transform = getBarrelTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+
     @Override
     public void vehicleShoot(Player player, int type) {
         if (this.cannotFire) return;
-        Matrix4f transform = getBarrelTransform();
-
-        float x = 0;
-        float y = 0;
-        float z = 0;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
 
 
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(player);
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
+        projectile.setPos(shootPos(1).x - 1.1 * this.getDeltaMovement().x, shootPos(1).y, shootPos(1).z - 1.1 * this.getDeltaMovement().z);
         projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 20,
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
@@ -226,6 +227,9 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                 ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(6, 5, 5, this.getX(), this.getEyeY(), this.getZ()));
             }
         }
+
+        this.entityData.set(CANNON_RECOIL_TIME, 30);
+        this.entityData.set(YAW, getTurretYRot());
 
         this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
         this.entityData.set(FIRE_ANIM, 3);
@@ -305,8 +309,8 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         }
     }
 
-    public Matrix4f getBarrelTransform() {
-        Matrix4f transformT = getTurretTransform();
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
         float x = 0f;
         float y = 0.5088375f;
         float z = 0.04173125f;
@@ -314,14 +318,14 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         Matrix4f transform = new Matrix4f();
         transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getTurretXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, turretXRotO, getTurretXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
-    public Matrix4f getTurretTransform() {
-        Matrix4f transformT = getVehicleTransform();
+    public Matrix4f getTurretTransform(float ticks) {
+        Matrix4f transformT = getVehicleTransform(ticks);
         float x = 0f;
         float y = 2.4616625f;
         float z = -0.565625f;
@@ -329,11 +333,12 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         Matrix4f transform = new Matrix4f();
         transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
+
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.BOAT_ENGINE.get();
@@ -430,12 +435,12 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.SPEEDBOAT_MAX_ENERGY.get();
     }
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.SPEEDBOAT_HP.get();
     }
 
     @Override

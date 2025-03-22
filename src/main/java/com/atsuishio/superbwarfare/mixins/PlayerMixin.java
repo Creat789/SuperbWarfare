@@ -16,9 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Code based on @Luke100000's ImmersiveAircraft
  */
 @Mixin(value = Player.class, priority = 1145)
-public abstract class PlayerEntityMixin extends Entity {
+public abstract class PlayerMixin extends Entity {
 
-    public PlayerEntityMixin(EntityType<?> type, Level world) {
+    public PlayerMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.world.damagesource.DamageType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class DamageModifier {
@@ -14,6 +15,7 @@ public class DamageModifier {
     private final List<DamageModify> immuneList = new ArrayList<>();
     private final List<DamageModify> reduceList = new ArrayList<>();
     private final List<DamageModify> multiplyList = new ArrayList<>();
+    private final List<BiFunction<DamageSource, Float, Float>> customList = new ArrayList<>();
 
     /**
      * 免疫所有伤害
@@ -139,6 +141,16 @@ public class DamageModifier {
         return this;
     }
 
+    /**
+     * 自定义伤害值计算
+     *
+     * @param damageModifyFunction 自定义伤害值计算函数
+     */
+    public DamageModifier custom(BiFunction<DamageSource, Float, Float> damageModifyFunction) {
+        customList.add(damageModifyFunction);
+        return this;
+    }
+
     private final List<DamageModify> combinedList = new ArrayList<>();
 
     /**
@@ -163,6 +175,12 @@ public class DamageModifier {
                 if (damage <= 0) return 0;
             }
         }
+
+        // 最后计算自定义伤害
+        for (var func : customList) {
+            damage = func.apply(source, damage);
+        }
+
         return damage;
     }
 }

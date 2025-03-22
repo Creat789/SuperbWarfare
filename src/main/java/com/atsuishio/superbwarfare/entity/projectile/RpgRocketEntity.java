@@ -22,7 +22,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -41,12 +40,10 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RpgRocketEntity extends ThrowableItemProjectile implements GeoEntity {
+public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
     public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(RpgRocketEntity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public String animationProcedure = "empty";
 
     private float monsterMultiplier = 0.0f;
     private float damage = 250f;
@@ -186,10 +183,6 @@ public class RpgRocketEntity extends ThrowableItemProjectile implements GeoEntit
         return super.getGravity();
     }
 
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
     public void setAnimation(String animation) {
         this.entityData.set(ANIMATION, animation);
     }
@@ -202,5 +195,10 @@ public class RpgRocketEntity extends ThrowableItemProjectile implements GeoEntit
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public boolean shouldSyncMotion() {
+        return true;
     }
 }

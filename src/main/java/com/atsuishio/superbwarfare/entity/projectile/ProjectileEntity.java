@@ -2,12 +2,14 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.block.BarbedWireBlock;
+import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Transcript;
 import com.atsuishio.superbwarfare.network.message.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.network.message.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.network.message.PlayerGunKillMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
@@ -47,6 +49,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
@@ -64,7 +67,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
-public class ProjectileEntity extends Projectile implements IEntityAdditionalSpawnData, GeoEntity {
+public class ProjectileEntity extends Projectile implements IEntityAdditionalSpawnData, GeoEntity, CustomSyncMotionEntity {
 
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> COLOR_G = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
@@ -72,10 +75,9 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator() && input.isAlive();
-    private static final Predicate<BlockState> IGNORE_LEAVES = input -> input != null && (input.getBlock() instanceof LeavesBlock
+    private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && (input.getBlock() instanceof LeavesBlock
             || input.getBlock() instanceof FenceBlock
-            || input.getBlock() instanceof IronBarsBlock
-            || input.getBlock() instanceof StainedGlassPaneBlock
+            || input.is(Blocks.IRON_BARS)
             || input.getBlock() instanceof DoorBlock
             || input.getBlock() instanceof TrapDoorBlock
             || input.getBlock() instanceof BarbedWireBlock);
@@ -244,7 +246,8 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         if (!this.level().isClientSide() && this.shooter != null) {
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
-            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this), IGNORE_LEAVES);
+            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.get() ? IGNORE_LIST : IGNORE_LIST.or(input -> input.is(Tags.Blocks.GLASS_PANES)));
             if (result.getType() != HitResult.Type.MISS) {
                 endVec = result.getLocation();
             }
@@ -298,6 +301,15 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
                     Math.max(this.getDeltaMovement().length() - 1.1 * this.tickCount, 0.2), true
             );
         }
+
+        this.syncMotion();
+    }
+
+    @Override
+    public void syncMotion() {
+        if (!this.level().isClientSide) {
+            ModUtils.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
+        }
     }
 
     @Override
@@ -342,6 +354,12 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
 
             if (state.getBlock() instanceof BellBlock bell) {
                 bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
+            }
+
+            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.get()) {
+                if (state.is(Tags.Blocks.GLASS) || state.is(Tags.Blocks.GLASS_PANES)) {
+                    this.level().destroyBlock(resultPos, false, this.getShooter());
+                }
             }
 
             if (state.getBlock() instanceof TargetBlock) {

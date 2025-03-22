@@ -37,20 +37,18 @@ public class GameRendererMixin {
     }
 
     // From Immersive_Aircraft
-
     @Shadow
     @Final
     private Camera mainCamera;
 
+    @SuppressWarnings("ConstantValue")
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V"))
-    public void immersiveAircraft$renderWorld(float tickDelta, long limitTime, PoseStack matrices, CallbackInfo ci) {
+    public void superbWarfare$renderWorld(float tickDelta, long limitTime, PoseStack matrices, CallbackInfo ci) {
         Entity entity = mainCamera.getEntity();
-        //noinspection ConstantValue
+
         if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof Ah6Entity vehicle) {
             // rotate camera
-
             matrices.mulPose(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
-//            matrices.mulPose(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
 
             // fetch eye offset
             float eye = entity.getEyeHeight();
@@ -73,9 +71,7 @@ public class GameRendererMixin {
 
         if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof Tom6Entity vehicle) {
             // rotate camera
-
             matrices.mulPose(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
-//            matrices.mulPose(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
 
             // fetch eye offset
             float eye = entity.getEyeHeight();

@@ -32,7 +32,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     public static final int DAMAGE_PERK_SLOT = 3;
     public static final int RESULT_SLOT = 4;
 
-    public static final int MAX_PERK_LEVEL = 50;
+    public static final int MAX_PERK_LEVEL = 20;
     public static final int MAX_UPGRADE_POINT = 100;
 
     public final DataSlot ammoPerkLevel = DataSlot.standalone();

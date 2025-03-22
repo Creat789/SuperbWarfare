@@ -19,6 +19,10 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class Ntw20Model extends GeoModel<Ntw20Item> {
 
+    public static float fireRotY = 0f;
+    public static float fireRotZ = 0f;
+    public static float rotXBipod = 0f;
+
     @Override
     public ResourceLocation getAnimationResource(Ntw20Item animatable) {
         return ModUtils.loc("animations/ntw_20.animation.json");
@@ -37,12 +41,14 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
     @Override
     public void setCustomAnimations(Ntw20Item animatable, long instanceId, AnimationState animationState) {
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
-        CoreGeoBone scope = getAnimationProcessor().getBone("scope");
-        CoreGeoBone l = getAnimationProcessor().getBone("l");
-        CoreGeoBone r = getAnimationProcessor().getBone("r");
         CoreGeoBone action = getAnimationProcessor().getBone("action");
         CoreGeoBone lh = getAnimationProcessor().getBone("lh");
+        CoreGeoBone scope = getAnimationProcessor().getBone("Scope1");
+        CoreGeoBone scope2 = getAnimationProcessor().getBone("Scope2");
+        CoreGeoBone scope3 = getAnimationProcessor().getBone("Scope3");
+        CoreGeoBone cross1 = getAnimationProcessor().getBone("Cross1");
+        CoreGeoBone cross2 = getAnimationProcessor().getBone("Cross2");
+        CoreGeoBone cross3 = getAnimationProcessor().getBone("Cross3");
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -67,38 +73,79 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        if (isProne(player)) {
-            l.setRotX(-1.5f);
-            r.setRotX(-1.5f);
+        int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+
+        float posY = switch (type) {
+            case 0 -> -0.25f;
+            case 1 -> -0.24f;
+            case 2 -> -0.5f;
+            case 3 -> -0.28f;
+            default -> 0f;
+        };
+        float scaleZ = switch (type) {
+            case 0, 1 -> 0.5f;
+            case 2 -> 0.8f;
+            case 3 -> 0.78f;
+            default -> 0f;
+        };
+        float posZ = switch (type) {
+            case 0, 1 -> 7f;
+            case 2 -> 9.8f;
+            case 3 -> 9.9f;
+            default -> 0f;
+        };
+
+        gun.setPosX(4.5525f * (float) zp);
+        gun.setPosY(posY * (float) zp - (float) (0.2f * zpz));
+        gun.setPosZ(posZ * (float) zp + (float) (0.3f * zpz));
+        gun.setRotZ((float) (0.05f * zpz));
+        gun.setScaleZ(1f - (scaleZ * (float) zp));
+        scope.setScaleZ(1f - (0.6f * (float) zp));
+        scope2.setScaleZ(1f - (0.8f * (float) zp));
+        scope3.setScaleZ(1f - (0.5f * (float) zp));
+
+        CoreGeoBone shen;
+        if (zt < 0.5) {
+            shen = getAnimationProcessor().getBone("fireRootNormal");
+        } else {
+            shen = switch (type) {
+                case 0 -> getAnimationProcessor().getBone("fireRoot0");
+                case 1 -> getAnimationProcessor().getBone("fireRoot1");
+                case 2 -> getAnimationProcessor().getBone("fireRoot2");
+                case 3 -> getAnimationProcessor().getBone("fireRoot3");
+                default -> getAnimationProcessor().getBone("fireRootNormal");
+            };
         }
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (5.825 * fp + 0.34f * fr + 2.35 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.2f * fr + 0.01f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.6f * ClientEventHandler.recoilHorizon * fpz);
+        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5f * fpz) * ClientEventHandler.recoilHorizon);
+
+        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
+        shen.setPosY((float) (0.15f * fp + 0.18f * fr));
+        shen.setPosZ((float) (2.935 * fp + 0.23f * fr + 1.325 * fpz));
+        shen.setRotX((float) (0.015f * fp + 0.12f * fr + 0.015f * fpz + 0.15f * (float) ClientEventHandler.actionMove));
+        shen.setRotY(fireRotY);
+        shen.setRotZ(fireRotZ);
 
         shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 - 0.5 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.7 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.87 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.7 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
+        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
+        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.6 * zt)));
+        shen.setRotX((float) (shen.getRotX() * (1 - 0.8 * zt)));
+        shen.setRotY((float) (shen.getRotY() * (1 - 0.85 * zt)));
+        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        gun.setPosX(4.54f * (float) zp);
-        gun.setPosY(-0.47f * (float) zp - (float) (0.2f * zpz));
-        gun.setPosZ(10.0f * (float) zp + (float) (0.3f * zpz));
-        gun.setRotZ((float) (0.02f * zpz));
-        gun.setScaleZ(1f - (0.8f * (float) zp));
-        scope.setScaleZ(1f - (0.85f * (float) zp));
-
         stack.getOrCreateTag().putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
 
-        action.setPosZ(6f * (float) ClientEventHandler.actionMove);
-        lh.setPosZ(-6f * (float) ClientEventHandler.actionMove);
+        action.setPosZ(3f * (float) ClientEventHandler.actionMove);
+        lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);
+
+        CoreGeoBone l = getAnimationProcessor().getBone("l");
+        CoreGeoBone r = getAnimationProcessor().getBone("r");
+        rotXBipod = Mth.lerp(1.5f * times, rotXBipod, isProne(player) ? -90 : 0);
+        l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
+        r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
         CoreGeoBone root = getAnimationProcessor().getBone("root");
         root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));

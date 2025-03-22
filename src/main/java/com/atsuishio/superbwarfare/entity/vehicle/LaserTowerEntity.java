@@ -65,10 +65,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public static final float MAX_HEALTH = VehicleConfig.LASER_TOWER_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.LASER_TOWER_MAX_ENERGY.get();
-    public static final int SHOOT_COST = VehicleConfig.LASER_TOWER_SHOOT_COST.get();
-    public int changeTargetTimer = 5000;
+    public int changeTargetTimer = 60;
 
     public LaserTowerEntity(PlayMessages.SpawnEntity packet, Level world) {
         //this(ModEntities.LASER_TOWER.get(), world);
@@ -257,7 +254,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     }
 
     public void autoAim() {
-        if (this.getEnergy() <= 0 || !entityData.get(ACTIVE) || this.entityData.get(COOL_DOWN) > 30) {
+        if (this.getEnergy() <= 0 || !entityData.get(ACTIVE)) {
             return;
         }
 
@@ -302,8 +299,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
             }
 
             if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(target)) {
-
-                this.entityData.set(COOL_DOWN, 40);
+                this.entityData.set(COOL_DOWN, VehicleConfig.LASER_TOWER_COOLDOWN.get());
 
                 if (level() instanceof ServerLevel serverLevel) {
                     this.level().playSound(this, getOnPos(), ModSounds.LASER_TOWER_SHOOT.get(), SoundSource.PLAYERS, 2, random.nextFloat() * 0.1f + 1);
@@ -311,7 +307,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                     sendParticle(serverLevel, ParticleTypes.LAVA, target.getX(), target.getEyeY(), target.getZ(), 4, 0, 0, 0, 0.15, true);
                 }
 
-                target.hurt(ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), (float) 15);
+                target.hurt(ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), VehicleConfig.LASER_TOWER_DAMAGE.get());
                 target.invulnerableTime = 0;
                 entityData.set(LASER_LENGTH, distanceTo(target));
                 if (Math.random() < 0.25 && target instanceof LivingEntity living) {
@@ -320,7 +316,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                 if (!target.isAlive()) {
                     entityData.set(TARGET_UUID, "none");
                 }
-                this.consumeEnergy(SHOOT_COST);
+                this.consumeEnergy(VehicleConfig.LASER_TOWER_SHOOT_COST.get());
             }
 
         } else {
@@ -369,11 +365,11 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.LASER_TOWER_MAX_ENERGY.get();
     }
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.LASER_TOWER_HP.get();
     }
 }

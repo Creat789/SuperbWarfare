@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
@@ -67,8 +68,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity, HelicopterEntity, WeaponVehicleEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = VehicleConfig.AH_6_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.AH_6_MAX_ENERGY.get();
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.INT);
@@ -109,6 +108,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(7, 1, -2.7);
     }
 
     @Override
@@ -412,7 +416,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             return;
         }
 
-        Matrix4f transform = getVehicleTransform();
+        Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.6f;
         float y = 1.2f - 1.45f;
@@ -472,12 +476,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public Matrix4f getVehicleTransform() {
+    public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) getX(), (float) getY() + 1.45f, (float) getZ());
-        transform.rotate(Axis.YP.rotationDegrees(-getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 1.45f, getY() + 1.45f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
@@ -512,12 +516,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.AH_6_HP.get();
     }
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.AH_6_MAX_ENERGY.get();
     }
 
     @Override
@@ -529,7 +533,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
         }
 
-        Matrix4f transform = getVehicleTransform();
+        Matrix4f transform = getVehicleTransform(1);
         float x;
         float y;
         float z;

@@ -3,8 +3,11 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
+import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
@@ -65,14 +68,10 @@ import java.util.Comparator;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
-    public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> GUN_FIRE_TIME = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
 
-    public static final float MAX_HEALTH = VehicleConfig.YX_100_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.YX_100_MAX_ENERGY.get();
-    public static final int SHOOT_COST = VehicleConfig.YX_100_SHOOT_COST.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Yx100Entity(PlayMessages.SpawnEntity packet, Level world) {
@@ -129,11 +128,19 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return switch (index) {
+            case 0 -> new ThirdPersonCameraPosition(5, 1.5, -0.8669625);
+            case 1 -> new ThirdPersonCameraPosition(-0.5, 2, 0);
+            default -> null;
+        };
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(MG_AMMO, 0);
         this.entityData.define(LOADED_AMMO, 0);
-        this.entityData.define(CANNON_FIRE_TIME, 0);
         this.entityData.define(GUN_FIRE_TIME, 0);
     }
 
@@ -175,8 +182,21 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 .multiply(0.75f, ModDamageTypes.PROJECTILE_BOOM)
                 .multiply(0.5f, ModDamageTypes.MINE)
                 .multiply(0.5f, ModDamageTypes.LUNGE_MINE)
-                .multiply(0.95f, ModDamageTypes.CANNON_FIRE)
+                .multiply(1.5f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.15f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
+                .custom((source, damage) -> getSourceAngle(source, 1.5f) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof SmallCannonShellEntity) {
+                        return 0.375f * damage;
+                    }
+                    return damage;
+                })
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof C4Entity || source.getDirectEntity() instanceof DroneEntity) {
+                        return 3f * damage;
+                    }
+                    return damage;
+                })
                 .reduce(9);
     }
 
@@ -203,10 +223,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         if (getRightTrack() > 80) {
             setRightTrack(0);
-        }
-
-        if (this.entityData.get(CANNON_FIRE_TIME) > 0) {
-            this.entityData.set(CANNON_FIRE_TIME, this.entityData.get(CANNON_FIRE_TIME) - 1);
         }
 
         if (this.entityData.get(GUN_FIRE_TIME) > 0) {
@@ -242,11 +258,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         collideBlock();
-        if (this.getDeltaMovement().length() > 0.15) {
+        if (this.getDeltaMovement().length() > 0.075) {
             collideHardBlock();
         }
-
-        this.setRecoilShake(Math.pow(entityData.get(CANNON_FIRE_TIME), 4) * 0.0000007 * Math.sin(0.2 * Math.PI * (entityData.get(CANNON_FIRE_TIME) - 2.5)));
 
         turretAngle(5, 5);
         gunnerAngle(15, 15);
@@ -299,12 +313,12 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
         if (reloadCoolDown == 0 && type == 0) {
 
-            if (!this.canConsume(SHOOT_COST)) {
+            if (!this.canConsume(VehicleConfig.YX_100_SHOOT_COST.get())) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
                 return;
             }
 
-            Matrix4f transform = getBarrelTransform();
+            Matrix4f transform = getBarrelTransform(1);
             Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
 
             var cannonShell = (CannonShellWeapon) getWeapon(0);
@@ -322,7 +336,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
             }
 
-            this.entityData.set(CANNON_FIRE_TIME, 40);
+            this.entityData.set(CANNON_RECOIL_TIME, 40);
             this.entityData.set(LOADED_AMMO, 0);
             this.consumeEnergy(10000);
             this.entityData.set(YAW, getTurretYRot());
@@ -385,7 +399,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (type == 1) {
             if (this.cannotFire) return;
 
-            Matrix4f transform = getGunTransform();
+            Matrix4f transform = getGunTransform(1);
             Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
 
             var projectile = (ProjectileWeapon) getWeapon(1);
@@ -469,7 +483,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(VehicleConfig.BMP_2_ENERGY_COST.get());
+            this.consumeEnergy(VehicleConfig.YX_100_ENERGY_COST.get());
         }
 
         this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.947f : 0.96f));
@@ -508,7 +522,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             return;
         }
 
-        Matrix4f transform = getTurretTransform();
+        Matrix4f transform = getTurretTransform(1);
 
         int i = this.getOrderedPassengers().indexOf(passenger);
 
@@ -523,12 +537,18 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
+    public Vec3 driverZoomPos(float ticks) {
+        Matrix4f transform = getTurretTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0, 0, 0.6076875f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
     public int getMaxPassengers() {
         return 3;
     }
 
-    public Matrix4f getBarrelTransform() {
-        Matrix4f transformT = getTurretTransform();
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
         float x = 0f;
         float y = 0.653275f;
         float z = 0.750975f;
@@ -536,14 +556,14 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         Matrix4f transform = new Matrix4f();
         transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getTurretXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, turretXRotO, getTurretXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
-    public Matrix4f getGunTransform() {
-        Matrix4f transformT = getTurretTransform();
+    public Matrix4f getGunTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
         float x = -0.87890625f;
         float y = 2f;
         float z = -0.6640625f;
@@ -557,8 +577,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return transform;
     }
 
-    public Matrix4f getTurretTransform() {
-        Matrix4f transformT = getVehicleTransform();
+    public Matrix4f getTurretTransform(float ticks) {
+        Matrix4f transformT = getVehicleTransform(ticks);
         float x = 0f;
         float y = 2.1484375f;
         float z = 0;
@@ -566,9 +586,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         Matrix4f transform = new Matrix4f();
         transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(getTurretYRot() - getYRot()));
-        transform.rotate(Axis.XP.rotationDegrees(getXRot()));
-        transform.rotate(Axis.ZP.rotationDegrees(getRoll()));
+        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
     }
 
@@ -632,7 +652,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
-        if (this.entityData.get(CANNON_FIRE_TIME) > 0) {
+        if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx100.fire"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle"));
@@ -658,12 +678,12 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.YX_100_MAX_ENERGY.get();
     }
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.YX_100_HP.get();
     }
 
     @Override
@@ -681,7 +701,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public boolean canShoot(Player player) {
         return switch (getSeatIndex(player)) {
-            case 0 -> this.entityData.get(LOADED_AMMO) > 0 && getEnergy() > SHOOT_COST;
+            case 0 -> this.entityData.get(LOADED_AMMO) > 0 && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
             case 1 -> (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
             default -> false;
         };

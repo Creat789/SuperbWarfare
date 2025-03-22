@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
@@ -57,7 +58,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = VehicleConfig.MK42_HP.get();
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
 
@@ -100,6 +100,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .icon(ModUtils.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(8, 1, 0);
     }
 
     @Override
@@ -194,6 +199,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
                 .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .multiply(10f, ModDamageTypes.VEHICLE_STRIKE)
+                .custom((source, damage) -> getSourceAngle(source, 1f) * damage)
                 .reduce(8);
     }
 
@@ -374,7 +380,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.MK42_HP.get();
     }
 
     @Override

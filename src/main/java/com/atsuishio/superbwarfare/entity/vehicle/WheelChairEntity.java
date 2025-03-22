@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -42,8 +43,7 @@ import java.util.List;
 public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = 30;
-    public static final int MAX_ENERGY = 24000;
+
     public int jumpCoolDown;
     public int handBusyTime;
 
@@ -187,13 +187,13 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
             if (passenger instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
             }
-            this.consumeEnergy(400);
+            this.consumeEnergy(VehicleConfig.WHEELCHAIR_JUMP_ENERGY_COST.get());
             this.setDeltaMovement(this.getDeltaMovement().add(0, 0.6, 0));
             jumpCoolDown = 3;
         }
 
         if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(1);
+            this.consumeEnergy(VehicleConfig.WHEELCHAIR_MOVE_ENERGY_COST.get());
         }
 
         if (passenger instanceof Player player && player.level().isClientSide && this.handBusyTime > 0) {
@@ -277,12 +277,12 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.WHEELCHAIR_HP.get();
     }
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.WHEELCHAIR_MAX_ENERGY.get();
     }
 
     @Override

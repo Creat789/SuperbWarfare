@@ -3,8 +3,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -72,9 +74,6 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     public static final EntityDataAccessor<String> SHOOTER_UUID = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public static final float MAX_HEALTH = VehicleConfig.ANNIHILATOR_HP.get();
-    public static final int MAX_ENERGY = VehicleConfig.ANNIHILATOR_MAX_ENERGY.get();
-    public static final int SHOOT_COST = VehicleConfig.ANNIHILATOR_SHOOT_COST.get();
     public Vec3 barrelLookAt;
 
     public AnnihilatorEntity(PlayMessages.SpawnEntity packet, Level world) {
@@ -93,6 +92,11 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
                         new LaserWeapon()
                 }
         };
+    }
+
+    @Override
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
+        return new ThirdPersonCameraPosition(16, 1.3, 0);
     }
 
     @Override
@@ -211,6 +215,19 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
                 .multiply(0.24f, ModDamageTypes.LUNGE_MINE)
                 .multiply(0.3f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.04f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
+                .custom((source, damage) -> getSourceAngle(source, 3) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof C4Entity) {
+                        return 40f * damage;
+                    }
+                    return damage;
+                })
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof DroneEntity) {
+                        return 8f * damage;
+                    }
+                    return damage;
+                })
                 .reduce(12);
     }
 
@@ -441,7 +458,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             return;
         }
 
-        if (!this.canConsume(SHOOT_COST)) {
+        if (!this.canConsume(VehicleConfig.ANNIHILATOR_SHOOT_COST.get())) {
             player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
             return;
         }
@@ -456,7 +473,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             }
 
             this.entityData.set(COOL_DOWN, 100);
-            this.consumeEnergy(SHOOT_COST);
+            this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
             final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
             for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(20), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
                 if (target instanceof ServerPlayer serverPlayer) {
@@ -574,12 +591,12 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
     @Override
     public int getMaxEnergy() {
-        return MAX_ENERGY;
+        return VehicleConfig.ANNIHILATOR_MAX_ENERGY.get();
     }
 
     @Override
     public float getMaxHealth() {
-        return MAX_HEALTH;
+        return VehicleConfig.ANNIHILATOR_HP.get();
     }
 
     @Override

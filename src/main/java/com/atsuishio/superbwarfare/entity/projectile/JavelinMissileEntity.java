@@ -27,7 +27,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -51,7 +50,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class JavelinMissileEntity extends ThrowableItemProjectile implements GeoEntity {
+public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity {
+
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
@@ -181,7 +181,7 @@ public class JavelinMissileEntity extends ThrowableItemProjectile implements Geo
     public void tick() {
         super.tick();
         Entity entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID));
-        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 48 , 160);
+        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 48, 160);
 
         for (var e : decoy) {
             if (e instanceof FlareDecoyEntity flareDecoy && !distracted) {
@@ -196,7 +196,7 @@ public class JavelinMissileEntity extends ThrowableItemProjectile implements Geo
                     this.entityData.set(TARGET_X, (float) entity.getX());
                     this.entityData.set(TARGET_Y, (float) entity.getY() + 0.5f * entity.getBbHeight());
                     this.entityData.set(TARGET_Z, (float) entity.getZ());
-                    if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount %((int)Math.max(0.04 * this.distanceTo(entity),2)) == 0) {
+                    if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
                 }
@@ -232,7 +232,6 @@ public class JavelinMissileEntity extends ThrowableItemProjectile implements Geo
                 }
             }
         } else if (guide_type == 1) {
-
             double px = this.getX();
             double ex = this.entityData.get(TARGET_X);
             double pz = this.getZ();
@@ -324,13 +323,6 @@ public class JavelinMissileEntity extends ThrowableItemProjectile implements Geo
         return 0F;
     }
 
-    public String getSyncedAnimation() {
-        return null;
-    }
-
-    public void setAnimation(String animation) {
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
@@ -339,5 +331,10 @@ public class JavelinMissileEntity extends ThrowableItemProjectile implements Geo
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public boolean shouldSyncMotion() {
+        return true;
     }
 }

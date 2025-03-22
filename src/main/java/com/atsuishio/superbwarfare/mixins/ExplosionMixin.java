@@ -35,7 +35,7 @@ public class ExplosionMixin {
                     target = "Ljava/util/List;get(I)Ljava/lang/Object;",
                     ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILHARD)
-    public void explode(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2) {
+    public void explode(CallbackInfo ci, Set<?> set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2) {
         if (list.size() >= k2) {
             var obj = list.get(k2);
             if (obj instanceof VehicleEntity vehicle) {
