@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.Mle1934Layer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.Mle1934Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Mle1934Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.mojang.blaze3d.vertex.PoseStack;

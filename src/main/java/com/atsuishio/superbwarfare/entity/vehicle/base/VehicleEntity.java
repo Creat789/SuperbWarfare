@@ -88,7 +88,7 @@ public abstract class VehicleEntity extends Entity {
     public float turretXRot;
     public float turretYRotO;
     public float turretXRotO;
-    public float turretRot;
+    public float turretYRotLock;
     public float gunYRot;
     public float gunXRot;
     public float gunYRotO;
@@ -360,17 +360,18 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
-    public double getYRotFromVector(Vec3 vec3) {
+    public static double getYRotFromVector(Vec3 vec3) {
         return Mth.atan2(vec3.x, vec3.z) * (180F / Math.PI);
     }
 
-    public double getXRotFromVector(Vec3 vec3) {
+    public static double getXRotFromVector(Vec3 vec3) {
         double d0 = vec3.horizontalDistance();
         return Mth.atan2(vec3.y, d0) * (180F / Math.PI);
     }
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
+        if (source.is(DamageTypes.CACTUS)) return false;
         // 计算减伤后的伤害
         float computedAmount = damageModifier.compute(source, amount);
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
@@ -424,7 +425,6 @@ public abstract class VehicleEntity extends Entity {
         return new DamageModifier()
                 .immuneTo(source -> source.getDirectEntity() instanceof ThrownPotion || source.getDirectEntity() instanceof AreaEffectCloud)
                 .immuneTo(DamageTypes.FALL)
-                .immuneTo(DamageTypes.CACTUS)
                 .immuneTo(DamageTypes.DROWN)
                 .immuneTo(DamageTypes.DRAGON_BREATH)
                 .immuneTo(DamageTypes.WITHER)
@@ -652,7 +652,7 @@ public abstract class VehicleEntity extends Entity {
         if (driver != null) {
             float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
 
-            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot() + 0.05f);
+            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot());
             float diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
 
             this.turretTurnSound(diffX, diffY, 0.95f);
@@ -662,9 +662,9 @@ public abstract class VehicleEntity extends Entity {
 
             this.setTurretXRot(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed));
             this.setTurretYRot(this.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
-            turretRot = Mth.clamp(0.9f * diffY, min, max);
+            turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
         } else {
-            turretRot = 0;
+            turretYRotLock = 0;
         }
     }
 
@@ -684,7 +684,7 @@ public abstract class VehicleEntity extends Entity {
         }
 
         this.setGunXRot(this.getGunXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed));
-        this.setGunYRot(this.getGunYRot() + Mth.clamp(0.9f * diffY, -ySpeed, ySpeed) + speed * turretRot);
+        this.setGunYRot(this.getGunYRot() + Mth.clamp(0.9f * diffY, -ySpeed, ySpeed) + speed * turretYRotLock);
     }
 
     public void destroy() {
@@ -888,6 +888,10 @@ public abstract class VehicleEntity extends Entity {
         return this.turretYRot;
     }
 
+    public float getTurretYaw(float pPartialTick) {
+        return Mth.lerp(pPartialTick, turretYRotO, getTurretYRot());
+    }
+
     public void setTurretYRot(float pTurretYRot) {
         this.turretYRot = pTurretYRot;
     }
@@ -898,6 +902,10 @@ public abstract class VehicleEntity extends Entity {
 
     public void setTurretXRot(float pTurretXRot) {
         this.turretXRot = pTurretXRot;
+    }
+
+    public float getTurretPitch(float pPartialTick) {
+        return Mth.lerp(pPartialTick, turretXRotO, getTurretXRot());
     }
 
     public float getGunYRot() {

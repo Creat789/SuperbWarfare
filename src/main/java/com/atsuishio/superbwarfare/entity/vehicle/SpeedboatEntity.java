@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.network.ModVariables;
 import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -134,13 +133,15 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
+            this.terrainCompat(2f, 3f);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.2, 0.85, 0.2));
-        } else {
-            float f = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+        } else if (isInWater()) {
+            float f = (float) (0.75f - (0.04f * java.lang.Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * this.getDeltaMovement().horizontalDistance())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.85, f));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
-
 
         if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
             sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
@@ -158,6 +159,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         if (this.getDeltaMovement().length() > 0.15) {
             collideHardBlock();
         }
+        inertiaRotate(2);
 
         this.refreshDimensions();
     }
@@ -176,35 +178,26 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         this.entityData.set(AMMO, ammoCount);
     }
 
-    public boolean zooming() {
-        Entity driver = this.getFirstPassenger();
-        if (driver == null) return false;
-        if (driver instanceof Player player) {
-            return player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).zoom;
-        }
-        return false;
-    }
-
     /**
      * 机枪塔开火
      */
-
-    public Vec3 shootPos(float ticks) {
-        Matrix4f transform = getBarrelTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
 
     @Override
     public void vehicleShoot(Player player, int type) {
         if (this.cannotFire) return;
 
+        Matrix4f transform = getBarrelTransform(1);
+
+        float x = 0f;
+        float y = 0.00106875f;
+        float z = 1.9117f;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
 
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(player);
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(shootPos(1).x - 1.1 * this.getDeltaMovement().x, shootPos(1).y, shootPos(1).z - 1.1 * this.getDeltaMovement().z);
+        projectile.setPos(worldPosition.x + 0.5 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z + 0.5 * this.getDeltaMovement().z);
         projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 20,
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
@@ -261,82 +254,62 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     public void travel() {
         Entity passenger0 = this.getFirstPassenger();
 
-        if (this.getEnergy() <= 0) return;
-
-        if (passenger0 == null) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
-        }
-
-        if (forwardInputDown) {
-            this.entityData.set(POWER, this.entityData.get(POWER) + 0.02f);
-        }
-
-        if (backInputDown) {
-            this.entityData.set(POWER, this.entityData.get(POWER) - 0.02f);
-            if (rightInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.2f);
-            } else if (leftInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.2f);
+        if (this.getEnergy() > 0) {
+            if (passenger0 == null) {
+                this.leftInputDown = false;
+                this.rightInputDown = false;
+                this.forwardInputDown = false;
+                this.backInputDown = false;
             }
-        } else {
-            if (rightInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
-            } else if (this.leftInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
+
+            if (forwardInputDown) {
+                this.entityData.set(POWER, this.entityData.get(POWER) + 0.005f);
+            }
+
+            if (backInputDown) {
+                this.entityData.set(POWER, this.entityData.get(POWER) - 0.005f);
+                if (rightInputDown) {
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
+                } else if (leftInputDown) {
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
+                }
+            } else {
+                if (rightInputDown) {
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
+                } else if (this.leftInputDown) {
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
+                }
+            }
+
+            if (this.forwardInputDown || this.backInputDown) {
+                this.consumeEnergy(VehicleConfig.SPEEDBOAT_ENERGY_COST.get());
+            }
+
+            if (level().isClientSide) {
+                level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown || this.backInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1f), false);
+            }
+
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
+            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
+
+            this.setRotorRot(this.getRotorRot() + 30 * this.entityData.get(POWER));
+            this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -1.25f, 1.25f) * 0.7f * (this.entityData.get(POWER) > 0 ? 1 : -1));
+
+            if (this.isInWater() || this.isUnderWater()) {
+                this.setXRot(this.getXRot() * 0.85f);
+                float direct = (90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+
+                this.setXRot((float) (this.getXRot() - direct * (this.onGround() ? 0 : 1) * 1.1f * this.getDeltaMovement().horizontalDistance()));
+                this.setYRot((float) (this.getYRot() - Math.max(12 * this.getDeltaMovement().length(), 0.8) * this.entityData.get(DELTA_ROT)));
+                this.setZRot((float) (this.getRoll() - direct * this.entityData.get(DELTA_ROT) * (this.onGround() ? 0 : 1) * 10 * this.getDeltaMovement().horizontalDistance()));
+
+                this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(this.entityData.get(POWER) * 1.75f)));
+            } else {
+                this.setXRot(this.getXRot() * 0.99f);
             }
         }
 
-        if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(VehicleConfig.SPEEDBOAT_ENERGY_COST.get());
-        }
-
-        if (level().isClientSide) {
-            level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown || this.backInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1f), false);
-        }
-
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.87f);
-        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
-
-        this.setRotorRot(this.getRotorRot() + 10 * this.entityData.get(POWER));
-        this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -1.25f, 1.25f) * 0.7f * (this.entityData.get(POWER) > 0 ? 1 : -1));
-
-        if (this.isInWater() || this.isUnderWater()) {
-            this.setYRot((float) (this.getYRot() - Math.max(12 * this.getDeltaMovement().length(), 0.8) * this.entityData.get(DELTA_ROT)));
-            this.setDeltaMovement(this.getDeltaMovement().add(Mth.sin(-this.getYRot() * 0.017453292F) * this.entityData.get(POWER), 0.0, Mth.cos(this.getYRot() * 0.017453292F) * this.entityData.get(POWER)));
-        }
-    }
-
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-        float x = 0f;
-        float y = 0.5088375f;
-        float z = 0.04173125f;
-        Vector4f worldPosition = transformPosition(transformT, x, y, z);
-
-        Matrix4f transform = new Matrix4f();
-        transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, turretXRotO, getTurretXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformT = getVehicleTransform(ticks);
-        float x = 0f;
-        float y = 2.4616625f;
-        float z = -0.565625f;
-        Vector4f worldPosition = transformPosition(transformT, x, y, z);
-
-        Matrix4f transform = new Matrix4f();
-        transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+        this.setZRot(this.roll * 0.85f);
     }
 
     @Override
@@ -345,34 +318,51 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    protected void positionRider(Entity pPassenger, MoveFunction pCallback) {
-        if (this.hasPassenger(pPassenger)) {
-            double posY = this.getY() + this.getPassengersRidingOffset() + pPassenger.getMyRidingOffset();
-
-            if (!zooming() && (this.isInWater() || this.isUnderWater())) {
-                pPassenger.setYRot((float) (pPassenger.getYRot() - Math.max(5 * this.getDeltaMovement().length(), 0.3) * this.entityData.get(DELTA_ROT)));
-                pPassenger.setYHeadRot((float) (pPassenger.getYHeadRot() - Math.max(5 * this.getDeltaMovement().length(), 0.3) * this.entityData.get(DELTA_ROT)));
-            }
-
-            if (this.getOrderedPassengers().size() > 1) {
-                int i = this.getSeatIndex(pPassenger);
-                if (i == 0) {
-                    pCallback.accept(pPassenger, this.getX(), posY, this.getZ());
-                    return;
-                }
-
-                double zOffset = -0.8;
-                if (i % 2 == 0) {
-                    zOffset = 0.8;
-                }
-
-                double xOffset = (int) -((i - 1) / 2.0 + 1) * 0.95;
-                Vec3 vec3 = (new Vec3(xOffset, 0.0D, zOffset)).yRot(-this.getYRot() * ((float) Math.PI / 180F) - ((float) Math.PI / 2F));
-                pCallback.accept(pPassenger, this.getX() + vec3.x, posY, this.getZ() + vec3.z);
-            } else {
-                pCallback.accept(pPassenger, this.getX(), posY, this.getZ());
-            }
+    protected void positionRider(Entity passenger, MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
         }
+        Matrix4f transform = getVehicleTransform(1);
+        int i = this.getOrderedPassengers().indexOf(passenger);
+
+        float y = -0.65f;
+
+        if (i == 0) {
+            Vector4f worldPosition = transformPosition(transform, 0, y + 0.25f, -0.2f);
+            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        } else if (i == 1) {
+            Vector4f worldPosition = transformPosition(transform, -0.8f, y, -1.2f);
+            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        } else if (i == 2) {
+            Vector4f worldPosition = transformPosition(transform, 0.8f, y, -1.2f);
+            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        } else if (i == 3) {
+            Vector4f worldPosition = transformPosition(transform, -0.8f, y, -2.2f);
+            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        } else if (i == 4) {
+            Vector4f worldPosition = transformPosition(transform, 0.8f, y, -2.2f);
+            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+
+        if (passenger != this.getFirstPassenger()) {
+            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
+        }
+
+        copyEntityData(passenger);
+    }
+
+    public void copyEntityData(Entity entity) {
+        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
+        float g = Mth.clamp(f, -105.0f, 105.0f);
+        entity.yRotO += g - f;
+        entity.setYRot(entity.getYRot() + g - f);
+        entity.setYHeadRot(entity.getYRot());
+        entity.setYBodyRot(getYRot());
     }
 
     @Override
@@ -392,14 +382,31 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     protected void clampRotation(Entity entity) {
+        float a = getTurretYaw(1);
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = - (180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float min = -40f - r * getXRot() - r2 * getRoll();
+        float max = 20f - r * getXRot() - r2 * getRoll();
+
         float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -40.0F, 20F);
+        float f1 = Mth.clamp(f, min, max);
         entity.xRotO += f1 - f;
         entity.setXRot(entity.getXRot() + f1 - f);
 
-        entity.setYBodyRot(this.getYRot());
         float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -140.0F, 140.0F);
+        float f3 = Mth.clamp(f2, -105.0F, 105.0F);
         entity.yRotO += f3 - f2;
         entity.setYRot(entity.getYRot() + f3 - f2);
         entity.setYBodyRot(this.getYRot());
@@ -408,6 +415,79 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public void onPassengerTurned(Entity entity) {
         this.clampRotation(entity);
+    }
+
+    public Vec3 driverZoomPos(float ticks) {
+        Matrix4f transform = getBarrelTransform(ticks);
+
+        float x = 0f;
+        float y = 0.5f;
+        float z = -0.25f;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
+    public Vec3 getBarrelVector(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    }
+
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.5088375f, 0.04173125f);
+
+        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        float a = getTurretYaw(ticks);
+
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = - (180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
+        float xV = Mth.lerp(ticks, xRotO, getXRot());
+        float z = Mth.lerp(ticks, prevRoll, getRoll());
+
+        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
+        return transformT;
+    }
+
+    public Matrix4f getTurretTransform(float ticks) {
+        Matrix4f transformV = getVehicleTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, 0, 1.5616625f, -0.565625f);
+
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
+        return transformV;
+    }
+
+    @Override
+    public Matrix4f getVehicleTransform(float ticks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.9f, getY() + 0.9f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
+        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
+        return transform;
     }
 
     private PlayState firePredicate(AnimationState<SpeedboatEntity> event) {

@@ -11,6 +11,7 @@ public class CommandRegister {
     public static void registerCommand(RegisterCommandsEvent event) {
         var command = Commands.literal("sbw");
         command.then(AmmoCommand.get());
+        command.then(ConfigCommand.get());
 
         event.getDispatcher().register(command);
     }

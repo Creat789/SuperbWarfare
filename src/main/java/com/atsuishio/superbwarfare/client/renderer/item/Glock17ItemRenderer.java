@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.Glock17Layer;
-import com.atsuishio.superbwarfare.client.layer.Glock17LightLayer;
+import com.atsuishio.superbwarfare.client.layer.gun.Glock17Layer;
+import com.atsuishio.superbwarfare.client.layer.gun.Glock17LightLayer;
 import com.atsuishio.superbwarfare.client.model.item.Glock17ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;

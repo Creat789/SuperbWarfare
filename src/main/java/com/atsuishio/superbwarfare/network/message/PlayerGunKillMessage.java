@@ -15,19 +15,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PlayerGunKillMessage {
-
-    public final int attackerId;
-    public final int targetId;
-    public final boolean headshot;
-    public final ResourceKey<DamageType> damageType;
-
-    public PlayerGunKillMessage(int attackerId, int targetId, boolean headshot, ResourceKey<DamageType> damageType) {
-        this.attackerId = attackerId;
-        this.targetId = targetId;
-        this.headshot = headshot;
-        this.damageType = damageType;
-    }
+public record PlayerGunKillMessage(int attackerId, int targetId, boolean headshot, ResourceKey<DamageType> damageType) {
 
     public static void encode(PlayerGunKillMessage message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.attackerId);

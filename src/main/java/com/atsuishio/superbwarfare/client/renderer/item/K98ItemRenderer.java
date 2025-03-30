@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.K98Layer;
+import com.atsuishio.superbwarfare.client.layer.gun.K98Layer;
 import com.atsuishio.superbwarfare.client.model.item.K98ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;

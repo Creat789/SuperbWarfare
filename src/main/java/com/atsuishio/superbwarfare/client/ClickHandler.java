@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -197,8 +200,6 @@ public class ClickHandler {
 
         ItemStack stack = player.getMainHandItem();
 
-        setKeyState(event);
-
         int key = event.getKey();
         if (event.getAction() == GLFW.GLFW_PRESS) {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
@@ -382,66 +383,6 @@ public class ClickHandler {
     private static void editModelShake() {
         ClientEventHandler.movePosY = -0.8;
         ClientEventHandler.fireRotTimer = 0.4;
-    }
-
-    private static void setKeyState(InputEvent.Key event) {
-        int key = event.getKey();
-        int state;
-        if (event.getAction() == InputConstants.PRESS) {
-            state = 1;
-        } else if (event.getAction() == InputConstants.RELEASE) {
-            state = 0;
-        } else {
-            return;
-        }
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        handleVehicleMove(key, state, player);
-        handleDroneMove(key, state, player);
-    }
-
-    private static void handleDroneMove(int key, int state, Player player) {
-        ItemStack stack = player.getMainHandItem();
-        if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
-            var options = Minecraft.getInstance().options;
-
-            if (key == options.keyLeft.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(0, state == 1));
-            } else if (key == options.keyRight.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(1, state == 1));
-            } else if (key == options.keyUp.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(2, state == 1));
-            } else if (key == options.keyDown.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(3, state == 1));
-            } else if (key == options.keyJump.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(4, state == 1));
-            } else if (key == options.keyShift.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(5, state == 1));
-            }
-        }
-    }
-
-    private static void handleVehicleMove(int key, int state, Player player) {
-        if (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle.getNthEntity(0) == player) {
-            var options = Minecraft.getInstance().options;
-
-            if (key == options.keyLeft.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(0, state == 1));
-            } else if (key == options.keyRight.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(1, state == 1));
-            } else if (key == options.keyUp.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(2, state == 1));
-            } else if (key == options.keyDown.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(3, state == 1));
-            } else if (key == options.keyJump.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(4, state == 1));
-            } else if (key == options.keyShift.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(5, state == 1));
-            } else if (key == ModKeyMappings.RELEASE_DECOY.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(6, state == 1));
-            }
-        }
     }
 
     private static void handleDoubleJump(Player player) {

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.Mk14Layer;
+import com.atsuishio.superbwarfare.client.layer.gun.Mk14Layer;
 import com.atsuishio.superbwarfare.client.model.item.Mk14ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;

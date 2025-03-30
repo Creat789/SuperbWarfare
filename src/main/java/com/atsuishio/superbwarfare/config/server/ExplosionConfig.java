@@ -20,10 +20,14 @@ public class ExplosionConfig {
     public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_EXPLOSION_RADIUS;
     public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_HIT_DAMAGE_C4;
+    public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_HIT_DAMAGE_RPG;
 
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_COUNTDOWN;
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_RADIUS;
+
+    public static ForgeConfigSpec.IntValue RPG_EXPLOSION_DAMAGE;
+    public static ForgeConfigSpec.IntValue RPG_EXPLOSION_RADIUS;
 
     public static ForgeConfigSpec.IntValue WIRE_GUIDE_MISSILE_DAMAGE;
     public static ForgeConfigSpec.IntValue WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE;
@@ -78,11 +82,15 @@ public class ExplosionConfig {
         builder.comment("The hit damage of Drone Kamikaze with C4");
         DRONE_KAMIKAZE_HIT_DAMAGE_C4 = builder.defineInRange("drone_kamikaze_hit_damage_c4", 150, 1, 10000000);
 
+        builder.comment("The hit damage of Drone Kamikaze with RPG");
+        DRONE_KAMIKAZE_HIT_DAMAGE_RPG = builder.defineInRange("drone_kamikaze_hit_damage_rpg", 270, 1, 10000000);
+
         builder.comment("The explosion damage of Drone Kamikaze");
         DRONE_KAMIKAZE_EXPLOSION_DAMAGE = builder.defineInRange("drone_kamikaze_explosion_damage", 160, 1, 10000000);
 
         builder.comment("The explosion radius of Drone Kamikaze");
         DRONE_KAMIKAZE_EXPLOSION_RADIUS = builder.defineInRange("drone_kamikaze_explosion_radius", 9, 1, 50);
+
 
         builder.pop();
 
@@ -95,7 +103,7 @@ public class ExplosionConfig {
         C4_EXPLOSION_COUNTDOWN = builder.defineInRange("c4_explosion_countdown", 514, 1, Integer.MAX_VALUE);
 
         builder.comment("The explosion radius of C4");
-        C4_EXPLOSION_RADIUS = builder.defineInRange("c4_explosion_radius", 14, 1, Integer.MAX_VALUE);
+        C4_EXPLOSION_RADIUS = builder.defineInRange("c4_explosion_radius", 10, 1, Integer.MAX_VALUE);
 
         builder.pop();
 
@@ -109,6 +117,16 @@ public class ExplosionConfig {
 
         builder.comment("The explosion radius of wre guide missile");
         WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS = builder.defineInRange("wire_guide_missile_explosion_radius", 6, 1, Integer.MAX_VALUE);
+
+        builder.pop();
+
+        builder.push("RPG");
+
+        builder.comment("The explosion damage of RPG in the drone");
+        RPG_EXPLOSION_DAMAGE = builder.defineInRange("rpg_explosion_damage", 130, 1, Integer.MAX_VALUE);
+
+        builder.comment("The explosion radius of RPG in the drone");
+        RPG_EXPLOSION_RADIUS = builder.defineInRange("rpg_explosion_radius", 10, 1, Integer.MAX_VALUE);
 
         builder.pop();
 

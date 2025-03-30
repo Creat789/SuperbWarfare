@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.item.SmallContainerBlockItem;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.Holder;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.BasicItemListing;
 import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.event.village.WandererTradesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -48,4 +50,11 @@ public class ModVillagers {
         return ForgeRegistries.ITEMS.getHolder(new ResourceLocation(ModUtils.MODID, name)).orElse(new Holder.Direct<>(ItemStack.EMPTY.getItem()));
     }
 
+    @SubscribeEvent
+    public static void addWandererTrade(WandererTradesEvent event) {
+        List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
+
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
+                SmallContainerBlockItem.createInstance(ModUtils.loc("containers/blueprints")), 10, 0, 0.05f));
+    }
 }

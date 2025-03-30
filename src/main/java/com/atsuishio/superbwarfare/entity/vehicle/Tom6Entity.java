@@ -128,8 +128,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
         if (onGround()) {
-            setXRot(getXRot() * 0.8f);
-            setZRot(getRoll() * 0.8f);
+            this.terrainCompat(1f, 1.2f);
         }
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
@@ -356,5 +355,13 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public boolean allowFreeCam() {
         return true;
+    }
+
+    @Override
+    public void collideBlock() {
+    }
+
+    @Override
+    public void collideHardBlock() {
     }
 }

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.MortarLayer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.MortarLayer;
 import com.atsuishio.superbwarfare.client.model.entity.MortarModel;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

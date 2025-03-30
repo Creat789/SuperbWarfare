@@ -40,27 +40,24 @@ public class ModVariables {
         public static void onPlayerLoggedInSyncPlayerVariables(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity().level().isClientSide()) return;
 
-            for (Player player : event.getEntity().level().players()) {
-                player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
-            }
+            var player = event.getEntity();
+            player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
         }
 
         @SubscribeEvent
         public static void onPlayerRespawnedSyncPlayerVariables(PlayerEvent.PlayerRespawnEvent event) {
             if (event.getEntity().level().isClientSide()) return;
 
-            for (Player player : event.getEntity().level().players()) {
-                player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
-            }
+            var player = event.getEntity();
+            player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
         }
 
         @SubscribeEvent
         public static void onPlayerChangedDimensionSyncPlayerVariables(PlayerEvent.PlayerChangedDimensionEvent event) {
             if (event.getEntity().level().isClientSide()) return;
 
-            for (Player player : event.getEntity().level().players()) {
-                player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
-            }
+            var player = event.getEntity();
+            player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
         }
 
         @SubscribeEvent
@@ -88,9 +85,8 @@ public class ModVariables {
 
             if (event.getEntity().level().isClientSide()) return;
 
-            for (Player player : event.getEntity().level().players()) {
-                player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
-            }
+            var player = event.getEntity();
+            player.getCapability(PLAYER_VARIABLES_CAPABILITY, null).orElse(new PlayerVariables()).syncPlayerVariables(player);
         }
 
         @SubscribeEvent

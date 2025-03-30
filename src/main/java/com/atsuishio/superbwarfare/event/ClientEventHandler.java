@@ -202,6 +202,7 @@ public class ClientEventHandler {
                 || (player != null && player.isSprinting());
     }
 
+    static short keysCache = 0;
     @SubscribeEvent
     public static void handleClientTick(TickEvent.ClientTickEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -219,14 +220,43 @@ public class ClientEventHandler {
         handleLungeAttack(player, stack);
         //handleGunMelee(player, stack);
 
-        if (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle.getFirstPassenger() == player && notInGame()) {
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(0, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(1, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(2, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(3, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(4, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(5, false));
-            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(6, false));
+
+        var options = Minecraft.getInstance().options;
+        short keys = 0;
+
+        // 正在游戏内控制载具或无人机
+        if (!notInGame() && (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle
+                && mobileVehicle.getFirstPassenger() == player
+                || stack.is(ModItems.MONITOR.get())
+                && ItemNBTTool.getBoolean(stack, "Using", false)
+                && ItemNBTTool.getBoolean(stack, "Linked", false))
+        ) {
+            if (options.keyLeft.isDown()) {
+                keys |= 0b0000001;
+            }
+            if (options.keyRight.isDown()) {
+                keys |= 0b0000010;
+            }
+            if (options.keyUp.isDown()) {
+                keys |= 0b0000100;
+            }
+            if (options.keyDown.isDown()) {
+                keys |= 0b0001000;
+            }
+            if (options.keyJump.isDown()) {
+                keys |= 0b0010000;
+            }
+            if (options.keyShift.isDown()) {
+                keys |= 0b0100000;
+            }
+            if (ModKeyMappings.RELEASE_DECOY.isDown()) {
+                keys |= 0b1000000;
+            }
+        }
+
+        if (keys != keysCache) {
+            ModUtils.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(keys));
+            keysCache = keys;
         }
 
         if (event.phase == TickEvent.Phase.END) {
@@ -610,7 +640,13 @@ public class ClientEventHandler {
                 player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
                 player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
             } else {
-                player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
+                if (yx100.getWeaponIndex(0) == 0 || yx100.getWeaponIndex(0) == 1) {
+                    player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
+                } else if (yx100.getWeaponIndex(0) == 2) {
+                    float pitch = yx100.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(COAX_HEAT)));
+                    player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
+                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
+                }
             }
         }
     }
@@ -682,7 +718,7 @@ public class ClientEventHandler {
         float pitch = event.getPitch();
         float roll = event.getRoll();
 
-        shakeTime = Mth.lerp(0.175 * times, shakeTime, 0);
+        shakeTime = Mth.lerp(0.05 * event.getPartialTick(), shakeTime, 0);
 
         if (player != null && shakeTime > 0) {
             float shakeRadiusAmplitude = (float) Mth.clamp(1 - player.position().distanceTo(new Vec3(shakePos[0], shakePos[1], shakePos[2])) / shakeRadius, 0, 1);
@@ -690,13 +726,13 @@ public class ClientEventHandler {
             boolean onVehicle = player.getVehicle() != null;
 
             if (shakeType > 0) {
-                event.setYaw((float) (yaw + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.4 : 1))));
-                event.setPitch((float) (pitch - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.4 : 1))));
-                event.setRoll((float) (roll - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * (onVehicle ? 0.4 : 1))));
+                event.setYaw((float) (yaw + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.1 : 1))));
+                event.setPitch((float) (pitch - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.1 : 1))));
+                event.setRoll((float) (roll - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * (onVehicle ? 0.1 : 1))));
             } else {
-                event.setYaw((float) (yaw - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.4 : 1))));
-                event.setPitch((float) (pitch + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.4 : 1))));
-                event.setRoll((float) (roll + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * (onVehicle ? 0.4 : 1))));
+                event.setYaw((float) (yaw - (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.1 : 1))));
+                event.setPitch((float) (pitch + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * shakeType * (onVehicle ? 0.1 : 1))));
+                event.setRoll((float) (roll + (shakeTime * Math.sin(0.5 * Math.PI * shakeTime) * shakeAmplitude * shakeRadiusAmplitude * (onVehicle ? 0.1 : 1))));
             }
         }
 

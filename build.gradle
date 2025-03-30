@@ -7,12 +7,16 @@ plugins {
 }
 
 def getGitCommitHash() {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = stdout
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    } catch (ignored) {
+        return 'unknown'
     }
-    return stdout.toString().trim()
 }
 
 version = "${mod_version}-SNAPSHOT-${getGitCommitHash()}"

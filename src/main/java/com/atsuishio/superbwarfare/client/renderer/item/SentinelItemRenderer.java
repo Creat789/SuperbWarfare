@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.SentinelLayer;
-import com.atsuishio.superbwarfare.client.layer.SentinelLightLayer;
+import com.atsuishio.superbwarfare.client.layer.gun.SentinelLayer;
+import com.atsuishio.superbwarfare.client.layer.gun.SentinelLightLayer;
 import com.atsuishio.superbwarfare.client.model.item.SentinelItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;

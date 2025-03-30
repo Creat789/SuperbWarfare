@@ -26,8 +26,9 @@ import net.minecraft.world.phys.HitResult;
 import java.util.Objects;
 
 public class Drone extends Item {
+
     public Drone() {
-        super(new Properties().rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.UNCOMMON));
     }
 
     @Override

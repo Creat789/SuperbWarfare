@@ -2,18 +2,22 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class Crowbar extends SwordItem {
+
     public Crowbar() {
         super(new Tier() {
             public int getUses() {
@@ -49,12 +53,12 @@ public class Crowbar extends SwordItem {
 
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        ItemStack retval = new ItemStack(this);
-        retval.setDamageValue(itemstack.getDamageValue() + 1);
-        if (retval.getDamageValue() >= retval.getMaxDamage()) {
+        ItemStack stack = new ItemStack(this);
+        stack.setDamageValue(itemstack.getDamageValue() + 1);
+        if (stack.getDamageValue() >= stack.getMaxDamage()) {
             return ItemStack.EMPTY;
         }
-        return retval;
+        return stack;
     }
 
     @Override
@@ -72,5 +76,8 @@ public class Crowbar extends SwordItem {
         return InteractionResult.SUCCESS;
     }
 
-
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.crowbar").withStyle(ChatFormatting.GRAY));
+    }
 }

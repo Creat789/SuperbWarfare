@@ -231,7 +231,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
                 int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), stack);
                 if (perkLevel > 0) {
-                    rocket.setExplosionRadius((float) GunsTool.getGunDoubleTag(stack, "ExplosionRadius", 0) * 0.5f);
+                    rocket.setExplosionRadius(0.5f);
                     rocket.setDamage((float) GunsTool.getGunDoubleTag(stack, "Damage", 0) * (1.1f + perkLevel * 0.1f));
                     velocity *= 1.2f;
                 }

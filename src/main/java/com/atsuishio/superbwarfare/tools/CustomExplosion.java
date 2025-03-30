@@ -77,7 +77,7 @@ public class CustomExplosion extends Explosion {
         final Vec3 center = new Vec3(pToBlowX, pToBlowY, pToBlowZ);
         for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(radius), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
             if (target instanceof ServerPlayer serverPlayer && !(target == pSource && pSource.getVehicle() != null)) {
-                ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(20 + 0.02 * damage, pRadius,10 + 0.03 * damage, pToBlowX, pToBlowY, pToBlowZ));
+                ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(10 + 0.02 * damage, 0.75 * pRadius,4 + 0.02 * damage, pToBlowX, pToBlowY, pToBlowZ));
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item;
 
-import com.atsuishio.superbwarfare.client.renderer.block.ContainerBlockItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModEntities;

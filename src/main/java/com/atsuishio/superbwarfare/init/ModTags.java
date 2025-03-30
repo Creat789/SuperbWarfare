@@ -42,6 +42,13 @@ public class ModTags {
         public static final TagKey<Item> INGOTS_CEMENTED_CARBIDE = tag("ingots/cemented_carbide");
         public static final TagKey<Item> STORAGE_BLOCK_CEMENTED_CARBIDE = tag("storage_blocks/cemented_carbide");
 
+        public static final TagKey<Item> BLUEPRINT = tag("blueprint");
+        public static final TagKey<Item> COMMON_BLUEPRINT = tag("blueprint/common");
+        public static final TagKey<Item> RARE_BLUEPRINT = tag("blueprint/rare");
+        public static final TagKey<Item> EPIC_BLUEPRINT = tag("blueprint/epic");
+        public static final TagKey<Item> LEGENDARY_BLUEPRINT = tag("blueprint/legendary");
+        public static final TagKey<Item> CANNON_BLUEPRINT = tag("blueprint/cannon");
+
         private static TagKey<Item> tag(String name) {
             return ItemTags.create(ModUtils.loc(name));
         }

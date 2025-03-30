@@ -1275,7 +1275,12 @@
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, 18, 0],
+					"pivot": [0, 18, 0]
+				},
+				{
+					"name": "main",
+					"parent": "base",
+					"pivot": [0, 38.4, 0],
 					"cubes": [
 						{
 							"origin": [-11.78528, 36.51485, 27.43235],
@@ -5145,7 +5150,7 @@
 				{
 					"name": "cannon",
 					"parent": "base",
-					"pivot": [0, 39.606, 0],
+					"pivot": [0, 38.4048, 0],
 					"cubes": [
 						{
 							"origin": [-3.6977, 38.4048, -13.8],

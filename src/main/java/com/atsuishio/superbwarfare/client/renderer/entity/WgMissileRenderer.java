@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.WgMissileLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.WgMissileLayer;
 import com.atsuishio.superbwarfare.client.model.entity.WgMissileModel;
 import com.atsuishio.superbwarfare.entity.projectile.WgMissileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

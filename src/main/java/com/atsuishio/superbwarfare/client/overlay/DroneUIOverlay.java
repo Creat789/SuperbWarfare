@@ -129,7 +129,7 @@ public class DroneUIOverlay {
                             w / 2 + 12, h / 2 - 28, color, false);
                 } else {
                     // 方块距离
-                    if (blockRange > 512) {
+                    if (blockRange > 500) {
                         guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
                                 .append(Component.literal("---m")), w / 2 + 12, h / 2 - 28, color, false);
                     } else {

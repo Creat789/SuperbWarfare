@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.LaserTowerLaserLayer;
-import com.atsuishio.superbwarfare.client.layer.LaserTowerPowerLayer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerLaserLayer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerPowerLayer;
 import com.atsuishio.superbwarfare.client.model.entity.LaserTowerModel;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

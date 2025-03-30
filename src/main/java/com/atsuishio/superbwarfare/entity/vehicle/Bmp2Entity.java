@@ -3,6 +3,9 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -14,10 +17,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.WgMissileWeapon;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.AmmoType;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,6 +48,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -62,12 +64,15 @@ import java.util.Comparator;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
+
     public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> MISSILE_COUNT = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int reloadCoolDown;
+
+    public OBB obb;
 
     public Bmp2Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.BMP_2.get(), world);
@@ -75,7 +80,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     public Bmp2Entity(EntityType<Bmp2Entity> type, Level world) {
         super(type, world);
-        this.setMaxUpStep(1.5f);
+        this.setMaxUpStep(2.25f);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(3.5f, 3.0f, 5.0f), new Quaternionf());
     }
 
     @Override
@@ -155,8 +161,11 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                 .multiply(8.5f, ModDamageTypes.VEHICLE_STRIKE)
                 .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage)
                 .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof DroneEntity) {
-                        return 1.5f * damage;
+                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                        return 2f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof MortarShellEntity) {
+                        return 3f * damage;
                     }
                     return damage;
                 })
@@ -176,6 +185,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     @Override
     public void baseTick() {
         super.baseTick();
+
+        this.updateOBB();
 
         if (getLeftTrack() < 0) {
             setLeftTrack(100);
@@ -228,6 +239,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         turretAngle(15, 10);
+        this.terrainCompat(4f, 5f);
+        inertiaRotate(1);
+
         lowHealthWarning();
         this.refreshDimensions();
     }
@@ -284,8 +298,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         Matrix4f transform = getBarrelTransform(1);
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
-            float x = -0.1125f;
-            float y = 0.174025f;
+            float x = -0.45f;
+            float y = 0.4f;
             float z = 4.2f;
 
             Vector4f worldPosition = transformPosition(transform, x, y, z);
@@ -328,9 +342,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFireCoax) return;
-            float x = 0.1125f;
-            float y = 0.174025f;
-            float z = 2f;
+            float x = -0.2f;
+            float y = 0.3f;
+            float z = 1.2f;
 
             Vector4f worldPosition = transformPosition(transform, x, y, z);
 
@@ -376,7 +390,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(player);
 
             wgMissileEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            wgMissileEntity.shoot(getBarrelVector(1).x, 0, getBarrelVector(1).z, 2f, 0f);
+            wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 2f, 0f);
             player.level().addFreshEntity(wgMissileEntity);
 
             if (!player.level().isClientSide) {
@@ -447,7 +461,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
         if (this.isInWater() || onGround()) {
             this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT)));
-            this.setDeltaMovement(this.getDeltaMovement().add(Mth.sin(-this.getYRot() * 0.017453292F) * (!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2f : 2.4)) * this.entityData.get(POWER), 0.0, Mth.cos(this.getYRot() * 0.017453292F) * (!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2f : 2.4)) * this.entityData.get(POWER)));
+            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
         }
     }
 
@@ -466,21 +480,24 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         Matrix4f transform = getTurretTransform(1);
         Matrix4f transformV = getVehicleTransform(1);
 
-        float x = 0.5f;
-        float y = 0.1f;
-        float z = 0.75f;
-        y += (float) passenger.getMyRidingOffset();
-
         int i = this.getSeatIndex(passenger);
 
         Vector4f worldPosition;
         if (i == 0) {
-            worldPosition = transformPosition(transform, x, y, z);
+            worldPosition = transformPosition(transform, 0.36f, -0.25f, 0.56f);
         } else {
             worldPosition = transformPosition(transformV, 0, 1, 0);
         }
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+
+        copyEntityData(passenger);
+    }
+
+    public void copyEntityData(Entity entity) {
+        if (entity == getNthEntity(0)) {
+            entity.setYBodyRot(getBarrelYRot(1));
+        }
     }
 
     public int getMaxPassengers() {
@@ -493,34 +510,55 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
+    @Override
+    public Vec3 getBarrelVector(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    }
+
     public Matrix4f getBarrelTransform(float ticks) {
         Matrix4f transformT = getTurretTransform(ticks);
-        float x = 0f;
-        float y = 0.5541f;
-        float z = 0.83004375f;
-        Vector4f worldPosition = transformPosition(transformT, x, y, z);
 
         Matrix4f transform = new Matrix4f();
-        transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, turretXRotO, getTurretXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+        Vector4f worldPosition = transformPosition(transform, 0.3625f, 0.293125f, 1.18095f);
+
+        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        float a = getTurretYaw(ticks);
+
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = -(180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
+        float xV = Mth.lerp(ticks, xRotO, getXRot());
+        float z = Mth.lerp(ticks, prevRoll, getRoll());
+
+        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
+        return transformT;
     }
 
     public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformT = getVehicleTransform(ticks);
-        float x = 0f;
-        float y = 2f;
-        float z = -0.703125f;
-        Vector4f worldPosition = transformPosition(transformT, x, y, z);
+        Matrix4f transformV = getVehicleTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        transform.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transform.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO - yRotO, getTurretYRot() - getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+        Vector4f worldPosition = transformPosition(transform, 0, 2.25f, -0.703125f);
+
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
+        return transformV;
     }
 
     @Override
@@ -540,10 +578,30 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     protected void clampRotation(Entity entity) {
+        float a = getTurretYaw(1);
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = -(180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float min = -74f - r * getXRot() - r2 * getRoll();
+        float max = 7.5f - r * getXRot() - r2 * getRoll();
+
         float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -74F, 7.5F);
+        float f1 = Mth.clamp(f, min, max);
         entity.xRotO += f1 - f;
         entity.setXRot(entity.getXRot() + f1 - f);
+
+        entity.setYBodyRot(getBarrelYRot(1));
     }
 
     @Override
@@ -628,5 +686,20 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     @Override
     public ResourceLocation getVehicleIcon() {
         return ModUtils.loc("textures/vehicle_icon/bmp2_icon.png");
+    }
+
+    @Override
+    public OBB getOBB() {
+        return this.obb;
+    }
+
+    // TODO 实现正确的旋转设置
+    @Override
+    public void updateOBB() {
+        this.obb.center().set(this.position().toVector3f());
+
+        this.obb.rotation().x = this.getPitch(1) * Mth.DEG_TO_RAD / 2;
+        this.obb.rotation().y = -this.getYaw(1) * Mth.DEG_TO_RAD / 2;
+        this.obb.rotation().z = this.getRoll(1) * Mth.DEG_TO_RAD / 2;
     }
 }

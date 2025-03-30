@@ -19,6 +19,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -393,7 +394,6 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     public void invalidateCaps() {
         super.invalidateCaps();
         for (LazyOptional<?> itemHandler : itemHandlers) itemHandler.invalidate();
-        energyHandler.invalidate();
     }
 
     @Override
@@ -401,5 +401,12 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         super.reviveCaps();
         this.itemHandlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
         this.energyHandler = LazyOptional.of(() -> new EnergyStorage(MAX_ENERGY));
+    }
+
+    @Override
+    public void saveToItem(ItemStack pStack) {
+        CompoundTag tag = new CompoundTag();
+        this.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> tag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
+        BlockItem.setBlockEntityData(pStack, this.getType(), tag);
     }
 }

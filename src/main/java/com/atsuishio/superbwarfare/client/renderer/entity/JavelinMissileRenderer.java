@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.JavelinMissleLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.JavelinMissleLayer;
 import com.atsuishio.superbwarfare.client.model.entity.JavelinMissileModel;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

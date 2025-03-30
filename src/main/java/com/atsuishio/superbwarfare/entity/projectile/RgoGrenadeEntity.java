@@ -46,6 +46,11 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.noCulling = true;
     }
 
+    public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, double x, double y, double z, Level world) {
+        super(type, x, y, z, world);
+        this.noCulling = true;
+    }
+
     public RgoGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.RGO_GRENADE.get(), entity, level);
         this.fuse = fuse;

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -138,9 +139,9 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
             }
         }
 
-        if (tickCount > 5 && this.getOwner() != null) {
+        if (tickCount > 5 && this.getOwner() != null && getOwner().getVehicle() instanceof Bmp2Entity bmp2) {
             Entity shooter = this.getOwner();
-            Vec3 lookVec = shooter.getViewVector(1).normalize();
+            Vec3 lookVec = bmp2.getBarrelVector(1).normalize();
             Vec3 toVec = shooter.getEyePosition().vectorTo(this.getEyePosition()).normalize();
             Vec3 addVec = lookVec.add(toVec.scale(-0.85)).normalize();
             double angle = Mth.abs((float) VectorTool.calculateAngle(lookVec, toVec));

@@ -12,9 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -22,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -31,6 +29,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -42,28 +41,45 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
-    public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(RpgRocketEntity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private float monsterMultiplier = 0.0f;
     private float damage = 250f;
+
     private float explosionDamage = 200f;
-    private float explosionRadius = 10f;
+    private float explosionRadius = 10;
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public RpgRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+    public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
+        super(pEntityType, pX, pY, pZ, pLevel);
+        this.noCulling = true;
+    }
+
+    public RpgRocketEntity(LivingEntity entity, Level level) {
         super(ModEntities.RPG_ROCKET.get(), entity, level);
+    }
+
+    public RpgRocketEntity(LivingEntity entity, Level level, float damage) {
+        this(entity, level);
         this.damage = damage;
+    }
+
+    public RpgRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+        this(entity, level, damage);
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
     }
 
     public RpgRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.RPG_ROCKET.get(), level);
+    }
+
+    public void setExplosionRadius(float explosionRadius) {
+        this.explosionRadius = explosionRadius;
     }
 
     public void setDamage(float damage) {
@@ -74,21 +90,17 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         this.explosionDamage = explosionDamage;
     }
 
-    public void setExplosionRadius(float explosionRadius) {
-        this.explosionRadius = explosionRadius;
-    }
-
     public void setMonsterMultiplier(float monsterMultiplier) {
         this.monsterMultiplier = monsterMultiplier;
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.ROCKET.get();
     }
 
@@ -130,7 +142,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
@@ -176,15 +188,6 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     private PlayState movementPredicate(AnimationState<RpgRocketEntity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
-    }
-
-    @Override
-    protected float getGravity() {
-        return super.getGravity();
-    }
-
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
     }
 
     @Override

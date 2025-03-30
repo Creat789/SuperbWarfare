@@ -19,6 +19,6 @@ public class RocketItemModel extends GeoModel<Rocket> {
 
     @Override
     public ResourceLocation getTextureResource(Rocket animatable) {
-        return ModUtils.loc("textures/item/rpg7.png");
+        return ModUtils.loc("textures/entity/rpg_rocket.png");
     }
 }

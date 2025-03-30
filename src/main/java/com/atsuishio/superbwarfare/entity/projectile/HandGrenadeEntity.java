@@ -45,6 +45,11 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         this.noCulling = true;
     }
 
+    public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, double x, double y, double z, Level world) {
+        super(type, x, y, z, world);
+        this.noCulling = true;
+    }
+
     public HandGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.HAND_GRENADE.get(), entity, level);
         this.fuse = fuse;

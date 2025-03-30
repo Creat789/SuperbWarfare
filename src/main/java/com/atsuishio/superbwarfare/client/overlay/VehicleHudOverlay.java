@@ -185,6 +185,8 @@ public class VehicleHudOverlay {
                         preciseBlit(guiGraphics, ModUtils.loc("textures/screens/land/tank_cannon_cross_ap.png"), k, l, 0, 0.0F, i, j, i, j);
                     } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                         preciseBlit(guiGraphics, ModUtils.loc("textures/screens/land/tank_cannon_cross_he.png"), k, l, 0, 0.0F, i, j, i, j);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                        preciseBlit(guiGraphics, ModUtils.loc("textures/screens/land/lav_gun_cross.png"), k, l, 0, 0.0F, i, j, i, j);
                     }
 
                 } else {
@@ -241,7 +243,7 @@ public class VehicleHudOverlay {
                     guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
                             w / 2 - 6, h - 53, 0x66FF00, false);
                 } else {
-                    if (blockRange > 512) {
+                    if (blockRange > 500) {
                         guiGraphics.drawString(mc.font, Component.literal("---m"), w / 2 - 6, h - 53, 0x66FF00, false);
                     } else {
                         guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
@@ -339,7 +341,7 @@ public class VehicleHudOverlay {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), 30, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                             double heat2 = yx100.getEntityData().get(COAX_HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("7.62MM ПКТ " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
                         }
                     }
 

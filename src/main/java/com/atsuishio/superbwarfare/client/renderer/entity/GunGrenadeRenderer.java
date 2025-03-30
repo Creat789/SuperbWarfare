@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.GunGrenadeLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.GunGrenadeLayer;
 import com.atsuishio.superbwarfare.client.model.entity.GunGrenadeModel;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

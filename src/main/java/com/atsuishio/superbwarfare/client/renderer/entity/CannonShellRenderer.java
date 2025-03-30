@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.CannonShellLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.CannonShellLayer;
 import com.atsuishio.superbwarfare.client.model.entity.CannonShellEntityModel;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

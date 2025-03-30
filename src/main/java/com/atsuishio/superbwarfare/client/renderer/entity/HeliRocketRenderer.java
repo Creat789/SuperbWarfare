@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.HeliRocketLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.HeliRocketLayer;
 import com.atsuishio.superbwarfare.client.model.entity.HeliRocketModel;
 import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

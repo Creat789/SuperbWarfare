@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.RpkLayer;
+import com.atsuishio.superbwarfare.client.layer.gun.RpkLayer;
 import com.atsuishio.superbwarfare.client.model.item.RpkItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;

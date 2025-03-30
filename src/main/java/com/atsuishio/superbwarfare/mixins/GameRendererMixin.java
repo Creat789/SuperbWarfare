@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -9,6 +9,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -46,50 +47,45 @@ public class GameRendererMixin {
     public void superbWarfare$renderWorld(float tickDelta, long limitTime, PoseStack matrices, CallbackInfo ci) {
         Entity entity = mainCamera.getEntity();
 
-        if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof Ah6Entity vehicle) {
+        if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof VehicleEntity vehicle) {
             // rotate camera
-            matrices.mulPose(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
+            float a = vehicle.getTurretYaw(tickDelta);
 
-            // fetch eye offset
-            float eye = entity.getEyeHeight();
+            float r = (Mth.abs(a) - 90f) / 90f;
 
-            // transform eye offset to match aircraft rotation
-            Vector3f offset = new Vector3f(0, -eye, 0);
-            Quaternionf quaternion = Axis.XP.rotationDegrees(0.0f);
-            quaternion.mul(Axis.YP.rotationDegrees(-vehicle.getViewYRot(tickDelta)));
-            quaternion.mul(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
-            quaternion.mul(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
-            offset.rotate(quaternion);
+            float r2;
 
-            // apply camera offset
-            matrices.mulPose(Axis.XP.rotationDegrees(mainCamera.getXRot()));
-            matrices.mulPose(Axis.YP.rotationDegrees(mainCamera.getYRot() + 180.0f));
-            matrices.translate(offset.x(), offset.y() + eye, offset.z());
-            matrices.mulPose(Axis.YP.rotationDegrees(-mainCamera.getYRot() - 180.0f));
-            matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
-        }
+            if (Mth.abs(a) <= 90f) {
+                r2 = a / 90f;
+            } else {
+                if (a < 0) {
+                    r2 = - (180f + a) / 90f;
+                } else {
+                    r2 = (180f - a) / 90f;
+                }
+            }
 
-        if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof Tom6Entity vehicle) {
-            // rotate camera
-            matrices.mulPose(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
+            matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
 
-            // fetch eye offset
-            float eye = entity.getEyeHeight();
+            if (!(vehicle instanceof SpeedboatEntity)) {
+                // fetch eye offset
+                float eye = entity.getEyeHeight();
 
-            // transform eye offset to match aircraft rotation
-            Vector3f offset = new Vector3f(0, -eye, 0);
-            Quaternionf quaternion = Axis.XP.rotationDegrees(0.0f);
-            quaternion.mul(Axis.YP.rotationDegrees(-vehicle.getViewYRot(tickDelta)));
-            quaternion.mul(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
-            quaternion.mul(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
-            offset.rotate(quaternion);
+                // transform eye offset to match aircraft rotation
+                Vector3f offset = new Vector3f(0, -eye, 0);
+                Quaternionf quaternion = Axis.XP.rotationDegrees(0.0f);
+                quaternion.mul(Axis.YP.rotationDegrees(-vehicle.getViewYRot(tickDelta)));
+                quaternion.mul(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
+                quaternion.mul(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
+                offset.rotate(quaternion);
 
-            // apply camera offset
-            matrices.mulPose(Axis.XP.rotationDegrees(mainCamera.getXRot()));
-            matrices.mulPose(Axis.YP.rotationDegrees(mainCamera.getYRot() + 180.0f));
-            matrices.translate(offset.x(), offset.y() + eye, offset.z());
-            matrices.mulPose(Axis.YP.rotationDegrees(-mainCamera.getYRot() - 180.0f));
-            matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
+                // apply camera offset
+                matrices.mulPose(Axis.XP.rotationDegrees(mainCamera.getXRot()));
+                matrices.mulPose(Axis.YP.rotationDegrees(mainCamera.getYRot() + 180.0f));
+                matrices.translate(offset.x(), offset.y() + eye, offset.z());
+                matrices.mulPose(Axis.YP.rotationDegrees(-mainCamera.getYRot() - 180.0f));
+                matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
+            }
         }
     }
 }
