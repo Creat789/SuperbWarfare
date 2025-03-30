@@ -140,7 +140,7 @@ public class ModTabs {
                     .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> {
                         if (registryObject.get() == ModItems.CONTAINER.get()) {
                             ContainerBlockItem.CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
-                        } else if (registryObject.get() == ModItems.CONTAINER.get()) {
+                        } else if (registryObject.get() == ModItems.SMALL_CONTAINER.get()) {
                             output.accept(registryObject.get());
                             SmallContainerBlockItem.SMALL_CONTAINER_LOOT_TABLES.stream().map(Supplier::get).forEach(output::accept);
                         } else {
