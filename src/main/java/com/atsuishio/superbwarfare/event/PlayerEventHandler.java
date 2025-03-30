@@ -368,20 +368,4 @@ public class PlayerEventHandler {
             }
         }
     }
-
-    @SubscribeEvent
-    public static void onAnvilUpdate(AnvilUpdateEvent event) {
-        ItemStack left = event.getLeft();
-        ItemStack right = event.getRight();
-
-        if (left.is(ModTags.Items.GUN) && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
-            ItemStack output = left.copy();
-
-            GunsTool.setGunDoubleTag(output, "UpgradePoint", GunsTool.getGunDoubleTag(output, "UpgradePoint", 0) + 1);
-
-            event.setOutput(output);
-            event.setCost(10);
-            event.setMaterialCost(1);
-        }
-    }
 }

@@ -31,11 +31,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3f;
 
 public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
+    public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
+
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
 
@@ -165,6 +168,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
             cannotFireCoax = true;
             this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
         }
+
+        if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
+            this.entityData.set(CANNON_RECOIL_TIME, this.entityData.get(CANNON_RECOIL_TIME) - 1);
+        }
+
+        this.setRecoilShake(java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * 0.0000007 * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
 
         preventStacking();
         crushEntities(this.getDeltaMovement());
@@ -316,19 +325,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
             var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                             entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
                     .stream().filter(entity -> {
-                                if (entity.isAlive()
-                                        && (entity instanceof VehicleEntity
-                                        || entity instanceof Boat
-                                        || entity instanceof Minecart
-                                        || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
-                                ) {
-                                    return true;
-
-                                    // todo 添加碰撞白名单
-
-//                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-//                                    if (type == null) return false;
-//                                    return !VehicleConfig.COLLISION_ENTITY_BLACKLIST.get().contains(type.toString());
+                                if (entity.isAlive()) {
+                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+                                    if (type == null) return false;
+                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
                                 }
                                 return false;
                             }
@@ -454,6 +456,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        this.entityData.define(CANNON_RECOIL_TIME, 0);
         this.entityData.define(POWER, 0f);
         this.entityData.define(YAW, 0f);
         this.entityData.define(AMMO, 0);
