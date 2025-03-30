@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class CreativeChargingStationBlockItem extends BlockItem {
 
     public CreativeChargingStationBlockItem() {
-        super(ModBlocks.CREATIVE_CHARGING_STATION.get(), new Item.Properties().rarity(Rarity.EPIC).stacksTo(1));
+        super(null, null);
     }
 
     @Override

@@ -102,7 +102,7 @@ public class ChargingStationBlock extends BaseEntityBlock {
     @Override
     public ItemStack getCloneItemStack(BlockGetter pLevel, BlockPos pPos, BlockState pState) {
         ItemStack itemstack = super.getCloneItemStack(pLevel, pPos, pState);
-        pLevel.getBlockEntity(pPos, ModBlockEntities.CHARGING_STATION.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemstack));
+        //pLevel.getBlockEntity(pPos, ModBlockEntities.CHARGING_STATION.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemstack));
         return itemstack;
     }
 }

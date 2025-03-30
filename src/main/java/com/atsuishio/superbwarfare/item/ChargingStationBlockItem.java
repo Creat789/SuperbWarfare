@@ -16,7 +16,7 @@ public class ChargingStationBlockItem extends BlockItem {
     public static final int MAX_ENERGY = 4000000;
 
     public ChargingStationBlockItem() {
-        super(ModBlocks.CHARGING_STATION.get(), new Item.Properties().stacksTo(1));
+        super(null,null);
     }
 
     @Override

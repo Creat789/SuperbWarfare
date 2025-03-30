@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
-import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
-import com.atsuishio.superbwarfare.block.entity.ContainerBlockEntity;
-import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
-import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
+import com.atsuishio.superbwarfare.block.entity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,5 +19,6 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(CreativeChargingStationBlockEntity::new, ModBlocks.CREATIVE_CHARGING_STATION.get()).build(null));
     public static final RegistryObject<BlockEntityType<FuMO25BlockEntity>> FUMO_25 = REGISTRY.register("fumo_25",
             () -> BlockEntityType.Builder.of(FuMO25BlockEntity::new, ModBlocks.FUMO_25.get()).build(null));*/
-
+   public static final RegistryObject<BlockEntityType<SmallContainerBlockEntity>> SMALL_CONTAINER = REGISTRY.register("small_container",
+           () -> BlockEntityType.Builder.of(SmallContainerBlockEntity::new, ModBlocks.SMALL_CONTAINER.get()).build(null));
 }
