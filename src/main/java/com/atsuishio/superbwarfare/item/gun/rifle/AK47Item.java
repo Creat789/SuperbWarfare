@@ -142,9 +142,7 @@ public class AK47Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.edit"));
-        }
+
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.idle"));
     }

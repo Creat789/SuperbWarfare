@@ -30,7 +30,7 @@ public class GunsDataMessage {
     }
 
     public static void handler(GunsDataMessage message, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.handleGunsDataMessage(message, ctx)));
+        //ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.handleGunsDataMessage(message, ctx)));
         ctx.get().setPacketHandled(true);
     }
 }

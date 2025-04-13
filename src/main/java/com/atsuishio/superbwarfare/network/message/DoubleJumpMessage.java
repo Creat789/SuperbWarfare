@@ -41,7 +41,6 @@ public class DoubleJumpMessage {
                 level.playSound(null, BlockPos.containing(x, y, z), ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1);
 
                 player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                    capability.playerDoubleJump = message.canDoubleJump;
                     capability.syncPlayerVariables(player);
                 });
             }

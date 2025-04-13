@@ -259,10 +259,6 @@ public class ClientEventHandler {
             keysCache = keys;
         }
 
-        if (event.phase == TickEvent.Phase.END) {
-            handleVariableDecrease();
-            aimAtVillager(player);
-        }
     }
 
     private static void handleVariableDecrease() {
@@ -287,33 +283,6 @@ public class ClientEventHandler {
                 && !level.getBlockState(BlockPos.containing(player.getX() + 0.7 * player.getLookAngle().x, player.getY() + 1.5, player.getZ() + 0.7 * player.getLookAngle().z)).canOcclude();
     }
 
-    public static void handleGunMelee(Player player, ItemStack stack) {
-        if (stack.getItem() instanceof GunItem gunItem) {
-            if (gunItem.hasMeleeAttack(stack) && gunMelee == 0 && drawTime < 0.01
-                    && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
-                    && !holdFireVehicle
-                    && !notInGame()
-                    && !player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit
-                    && !(stack.getOrCreateTag().getBoolean("is_normal_reloading") || stack.getOrCreateTag().getBoolean("is_empty_reloading"))
-                    && !GunsTool.getGunBooleanTag(stack, "Reloading")
-                    && !player.getCooldowns().isOnCooldown(stack.getItem())
-                    && !GunsTool.getGunBooleanTag(stack, "Charging")) {
-                gunMelee = 36;
-                cantFireTime = 40;
-                player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
-            }
-            if (gunMelee == 22) {
-                Entity lookingEntity = TraceTool.findMeleeEntity(player, player.getEntityReach());
-                if (lookingEntity != null) {
-                    ModUtils.PACKET_HANDLER.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
-                }
-            }
-        }
-
-        if (gunMelee > 0) {
-            gunMelee--;
-        }
-    }
 
     public static void handleLungeAttack(Player player, ItemStack stack) {
         if (stack.is(ModItems.LUNGE_MINE.get()) && lungeAttack == 0 && lungeDraw == 0 && holdFire) {
@@ -357,109 +326,6 @@ public class ClientEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void handleWeaponFire(TickEvent.RenderTickEvent event) {
-    }
-
-    public static void beamShoot(Player player, ItemStack stack) {
-        if (stack.is(ModItems.BEAM_TEST.get()) && player.getUseItem() == stack) {
-            Entity lookingEntity = TraceTool.laserfindLookingEntity(player, 512);
-
-            if (player.isCrouching()) {
-                Entity seekingEntity = SeekTool.seekLivingEntity(player, player.level(), 64, 32);
-                if (seekingEntity != null && seekingEntity.isAlive()) {
-                    player.lookAt(EntityAnchorArgument.Anchor.EYES, seekingEntity.getEyePosition());
-                }
-            }
-
-            if (lookingEntity == null) {
-                return;
-            }
-
-            boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                    && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || lookingEntity.getTeam().getName().equals("TDM"));
-
-            if (canAttack) {
-                ModUtils.PACKET_HANDLER.sendToServer(new LaserShootMessage(1, lookingEntity.getUUID(), TraceTool.laserHeadshot));
-            }
-        }
-    }
-
-    /*public static void shootClient(Player player) {
-        ItemStack stack = player.getMainHandItem();
-        if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
-                int mode = GunsTool.getGunIntTag(stack, "FireMode");
-                if (mode != 2) {
-                    holdFire = false;
-                }
-
-                if (mode == 1) {
-                    if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 1) {
-                        burstFireSize = 1;
-                    }
-                    if (burstFireSize == 1) {
-                        cantFireTime = 40;
-                    }
-                }
-
-                if (burstFireSize > 0) {
-                    burstFireSize--;
-                }
-
-                if (stack.is(ModItems.DEVOTION.get())) {
-                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), stack);
-                    customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
-                }
-
-                if (stack.getItem() == ModItems.SENTINEL.get()) {
-                    chamberRot = 1;
-                }
-
-                if (stack.getItem() == ModItems.NTW_20.get()) {
-                    actionMove = 1;
-                }
-
-                // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (GunsTool.getGunIntTag(stack, "BoltActionTime", 0) > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    GunsTool.setGunBooleanTag(stack, "NeedBoltAction", true);
-                }
-
-                revolverPreTime = 0;
-                revolverWheelPreTime = 0;
-
-                playGunClientSounds(player);
-                handleClientShoot();
-            }
-        } else if (stack.is(ModItems.MINIGUN.get())) {
-            var tag = stack.getOrCreateTag();
-
-            if ((player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables())).rifleAmmo > 0
-                    || InventoryTool.hasCreativeAmmoBox(player)) {
-
-                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-                float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
-
-                player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
-
-                if (perk == ModPerks.BEAST_BULLET.get()) {
-                    player.playSound(ModSounds.HENG.get(), 1f, 1f);
-                }
-
-                double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
-
-                ModUtils.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
-            }
-
-            handleClientShoot();
-        }
-    }*/
-
-    public static void gunPartMove(float times) {
-        chamberRot = Mth.lerp(0.07 * times, chamberRot, 0);
-        actionMove = Mth.lerp(0.125 * times, actionMove, 0);
-    }
 
     public static void handleClientShoot() {
         Player player = Minecraft.getInstance().player;
@@ -499,61 +365,6 @@ public class ClientEventHandler {
         }
     }
 
-    public static void playGunClientSounds(Player player) {
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) {
-            return;
-        }
-
-        String origin = stack.getItem().getDescriptionId();
-        String name = origin.substring(origin.lastIndexOf(".") + 1);
-
-        if (stack.getItem() == ModItems.SENTINEL.get()) {
-            AtomicBoolean charged = new AtomicBoolean(false);
-
-            stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                    e -> charged.set(e.getEnergyStored() > 0)
-            );
-
-            if (charged.get()) {
-                SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(ModUtils.MODID, "sentinel_charge_fire_1p"));
-                if (sound1p != null) {
-                    player.playSound(sound1p, 2f, 1);
-                }
-                return;
-            }
-        }
-
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-
-        if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 1f, 1f);
-        }
-
-        int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
-
-        SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(ModUtils.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
-
-        if (sound1p != null) {
-            player.playSound(sound1p, 2f, 1);
-        }
-
-        double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
-
-        ModUtils.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
-            if (gunItem.canEjectShell(stack)) {
-                if (stack.is(ModTags.Items.SHOTGUN)) {
-                    player.playSound(ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                } else if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
-                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
-                } else {
-                    player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                }
-
-            }
-        });
-    }
 
     @SubscribeEvent
     public static void handleVehicleFire(TickEvent.RenderTickEvent event) {
@@ -681,16 +492,7 @@ public class ClientEventHandler {
 
         double customWeight = GunsTool.getGunDoubleTag(stack, "CustomWeight");
 
-        if (!player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).breath &&
-                player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).zoom) {
-            float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
-            player.setXRot(newPitch);
-            player.xRotO = player.getXRot();
 
-            float newYaw = (float) (player.getYRot() - 0.005f * Mth.cos((float) (0.025 * (player.tickCount + 2 * Math.PI))) * pose * Mth.nextDouble(RandomSource.create(), 0.05, 1.25) * times * sway * (1 - 0.03 * customWeight));
-            player.setYRot(newYaw);
-            player.yRotO = player.getYRot();
-        }
     }
 
     @SubscribeEvent
@@ -748,11 +550,8 @@ public class ClientEventHandler {
             handleWeaponSway(living);
             handleWeaponMove(living);
             handleWeaponZoom(living);
-            handlePlayerBreath(living);
             handleWeaponFire(event, living);
             handleWeaponShell();
-            handleGunRecoil();
-            handleBowPullAnimation(living);
             handleWeaponDraw(living);
             handlePlayerCamera(event);
         }
@@ -848,13 +647,6 @@ public class ClientEventHandler {
                 onGround = 0.001;
             }
 
-            if (!entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-                if (Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
-                    moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
-                } else {
-                    moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0) * (1 - zoomTime);
-                }
-            }
 
             if (isMoving() && firePosTimer == 0) {
                 if (moveYTime < 1.25) {
@@ -902,21 +694,7 @@ public class ClientEventHandler {
         double weight = GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight");
         double speed = 1.5 - (0.07 * weight);
 
-        if (zoom
-                && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
-                && !notInGame()
-                && drawTime < 0.01
-                && !player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-            if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.getPersistentData().putDouble("noRun", 5);
-            }
-            if (cantFireTime <= 10) {
-                zoomTime = Mth.clamp(zoomTime + 0.03 * speed * times, 0, 1);
-            }
 
-        } else {
-            zoomTime = Mth.clamp(zoomTime - 0.04 * speed * times, 0, 1);
-        }
         zoomPos = AnimationCurves.EASE_IN_OUT_QUINT.apply(zoomTime);
         zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime);
     }
@@ -1104,12 +882,7 @@ public class ClientEventHandler {
         if (recoilTime >= 2.5) recoilTime = 0;
     }
 
-    private static void handlePlayerBreath(LivingEntity entity) {
-        float times = (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
-        boolean breath = (entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables())).breath;
 
-        breathTime = Mth.lerp(0.2f * times, breathTime, breath ? 1 : 0);
-    }
 
     private static void handleShockCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
         if (entity.hasEffect(ModMobEffects.SHOCK.get()) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
@@ -1174,25 +947,6 @@ public class ClientEventHandler {
         event.setRoll((float) (roll + cameraRot[2] + (DisplayConfig.CAMERA_ROTATE.get() ? 0.35 : 0) * turnRot[2]));
     }
 
-    private static void handleBowPullAnimation(LivingEntity entity) {
-        float times = 4 * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
-
-        if ((entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables())).bowPull) {
-            pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
-            bowTimer = Math.min(bowTimer + 0.018 * times, 1);
-            handTimer = Math.min(handTimer + 0.018 * times, 1);
-            handPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(handTimer, 2) - 1, 2)) + 0.5;
-        } else {
-            pullTimer = Math.max(pullTimer - 0.015 * times, 0);
-            bowTimer = Math.max(bowTimer - 1 * times, 0);
-            handTimer = Math.max(handTimer - 0.04 * times, 0);
-            if (handTimer > 0 && handTimer < 0.5) {
-                handPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(handTimer, 2) - 1, 2)) + 0.5;
-            }
-        }
-        pullPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(Mth.clamp(pullTimer, 0, 1), 2) - 1, 2)) + 0.5;
-        bowPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(bowTimer, 2) - 1, 2)) + 0.5;
-    }
 
     @SubscribeEvent
     public static void onFovUpdate(ViewportEvent.ComputeFov event) {
@@ -1264,23 +1018,6 @@ public class ClientEventHandler {
         }
     }
 
-    private static Vec3 getVec3(ViewportEvent.ComputeFov event, Player player) {
-        Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
-        Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick(), player.xo, player.getX()), Mth.lerp(event.getPartialTick(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick(), player.zo, player.getZ()));
-        return playerVec.vectorTo(targetVec);
-    }
-
-    public static void look(Player player, Vec3 pTarget) {
-        double d0 = pTarget.x;
-        double d1 = pTarget.y;
-        double d2 = pTarget.z;
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        player.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
-        player.setYRot(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
-        player.setYHeadRot(player.getYRot());
-        player.xRotO = player.getXRot();
-        player.yRotO = player.getYRot();
-    }
 
     @SubscribeEvent
     public static void setPlayerInvisible(RenderPlayerEvent.Pre event) {
@@ -1373,23 +1110,6 @@ public class ClientEventHandler {
             shells[i].setPosY((float) (y * randomShell[0] * shellIndexTime[i] - 0.025 * Math.pow(shellIndexTime[i], 2)));
             shells[i].setRotX((float) (randomShell[1] * shellIndexTime[i]));
             shells[i].setRotY((float) (randomShell[2] * shellIndexTime[i]));
-        }
-    }
-
-    public static void aimAtVillager(Player player) {
-        if (aimVillagerCountdown > 0) return;
-
-        if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).zoom) {
-            Entity entity = TraceTool.findLookingEntity(player, 10);
-            if (entity instanceof AbstractVillager villager) {
-                List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);
-                for (var e : entities) {
-                    if (e == player) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
-                        aimVillagerCountdown = 80;
-                    }
-                }
-            }
         }
     }
 }

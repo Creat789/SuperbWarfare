@@ -16,7 +16,7 @@ public class ModContainerLootProvider implements LootTableSubProvider {
 
     @Override
     public void generate(BiConsumer<ResourceLocation, LootTable.Builder> pOutput) {
-        pOutput.accept(ModUtils.loc("containers/blueprints"),
+       /* pOutput.accept(ModUtils.loc("containers/blueprints"),
                 LootTable.lootTable()
                         .withPool(multiItems(1, 0,
                                 new PoolTriple(ModItems.GLOCK_17_BLUEPRINT.get(), 60, 0),
@@ -52,7 +52,7 @@ public class ModContainerLootProvider implements LootTableSubProvider {
                                 new PoolTriple(ModItems.SENTINEL_BLUEPRINT.get(), 5, 0),
                                 new PoolTriple(ModItems.JAVELIN_BLUEPRINT.get(), 5, 0),
                                 new PoolTriple(ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), 5, 0)
-                        )));
+                        )));*/
     }
 
     public LootPool.Builder singleItem(ItemLike item, int weight) {

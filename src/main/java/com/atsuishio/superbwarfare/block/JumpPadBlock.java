@@ -117,9 +117,5 @@ public class JumpPadBlock extends Block {
             level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
         }
 
-        entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-            capability.playerDoubleJump = true;
-            capability.syncPlayerVariables(entity);
-        });
     }
 }

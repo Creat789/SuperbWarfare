@@ -42,7 +42,6 @@ public class ReloadMessage {
     public static void pressAction(Player player, int type) {
         if (type == 0) {
             player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                capability.edit = false;
                 capability.syncPlayerVariables(player);
             });
 
@@ -62,26 +61,6 @@ public class ReloadMessage {
                 boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
                 boolean clipLoad = GunsTool.getGunIntTag(stack, "Ammo", 0) == 0 && gunItem.isClipReload(stack);
 
-                // 检查备弹
-                boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
-
-                if (!hasCreativeAmmoBox) {
-                    if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0) {
-                        return;
-                    } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && capability.sniperAmmo == 0) {
-                        return;
-                    } else if ((stack.is(ModTags.Items.USE_HANDGUN_AMMO) || stack.is(ModTags.Items.SMG)) && capability.handgunAmmo == 0) {
-                        return;
-                    } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && capability.rifleAmmo == 0) {
-                        return;
-                    } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && capability.heavyAmmo == 0) {
-                        return;
-                    } else if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") == 0) {
-                        return;
-                    } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(stack, "MaxAmmo") == 0) {
-                        return;
-                    }
-                }
 
                 if (canReload || clipLoad) {
                     int magazine = GunsTool.getGunIntTag(stack, "Magazine", 0);

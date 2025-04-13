@@ -31,8 +31,6 @@ public class AmmoCommand {
 
                     var type = context.getArgument("type", AmmoType.class);
 
-                    var value = player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).map(type::get).orElse(0);
-                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.get", Component.translatable(type.translatableKey), value), true);
                     return 0;
                 }))))
                 .then(Commands.literal("set").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", EnumArgument.enumArgument(AmmoType.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
@@ -40,12 +38,7 @@ public class AmmoCommand {
                     var type = context.getArgument("type", AmmoType.class);
                     var value = IntegerArgumentType.getInteger(context, "value");
 
-                    for (var player : players) {
-                        player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                            type.set(capability, value);
-                            capability.syncPlayerVariables(player);
-                        });
-                    }
+
 
                     context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.set", Component.translatable(type.translatableKey), value, players.size()), true);
                     return 0;
@@ -55,12 +48,7 @@ public class AmmoCommand {
                     var type = context.getArgument("type", AmmoType.class);
                     var value = IntegerArgumentType.getInteger(context, "value");
 
-                    for (var player : players) {
-                        player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                            type.add(capability, value);
-                            capability.syncPlayerVariables(player);
-                        });
-                    }
+
 
                     context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.add", Component.translatable(type.translatableKey), value, players.size()), true);
                     return 0;

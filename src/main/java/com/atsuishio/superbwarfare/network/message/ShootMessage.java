@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.network.message;
 
-import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -95,47 +94,7 @@ public class ShootMessage {
 
                 var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
-                for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-                    GunEventHandler.gunShoot(player, spared);
-                }
 
-                GunEventHandler.playGunSounds(player);
-            }
-        } else if (stack.is(ModItems.MINIGUN.get())) {
-            var tag = stack.getOrCreateTag();
-
-            if ((player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables())).rifleAmmo > 0
-                    || InventoryTool.hasCreativeAmmoBox(player)) {
-                tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
-                if (tag.getDouble("heat") >= 50.5) {
-                    tag.putDouble("overheat", 40);
-                    player.getCooldowns().addCooldown(stack.getItem(), 40);
-                    if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
-                    }
-                }
-                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-                float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
-
-                if (!player.level().isClientSide() && player instanceof ServerPlayer) {
-                    float soundRadius = (float) GunsTool.getGunDoubleTag(stack, "SoundRadius");
-
-                    player.playSound(ModSounds.MINIGUN_FIRE_3P.get(), soundRadius * 0.2f, pitch);
-                    player.playSound(ModSounds.MINIGUN_FAR.get(), soundRadius * 0.5f, pitch);
-                    player.playSound(ModSounds.MINIGUN_VERYFAR.get(), soundRadius, pitch);
-
-                    if (perk == ModPerks.BEAST_BULLET.get()) {
-                        player.playSound(ModSounds.HENG.get(), 4f, pitch);
-                    }
-                }
-
-                GunEventHandler.gunShoot(player, spared);
-                if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                        capability.rifleAmmo = player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).rifleAmmo - 1;
-                        capability.syncPlayerVariables(player);
-                    });
-                }
             }
         }
     }

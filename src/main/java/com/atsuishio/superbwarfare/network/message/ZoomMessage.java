@@ -44,7 +44,6 @@ public class ZoomMessage {
             if (message.type == 0) {
                 player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
                     capability.zoom = true;
-                    capability.edit = false;
                     capability.syncPlayerVariables(player);
                 });
 
@@ -59,7 +58,6 @@ public class ZoomMessage {
             if (message.type == 1) {
                 player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
                     capability.zoom = false;
-                    capability.breath = false;
                     capability.syncPlayerVariables(player);
                 });
 

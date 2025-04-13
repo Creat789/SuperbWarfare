@@ -194,7 +194,6 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         if (GunsTool.getGunBooleanTag(stack, "Reloading")) return;
         if (player.getCooldowns().isOnCooldown(stack.getItem()) || GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0) return;
 
-        boolean zooming = player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).map(c -> c.zoom).orElse(false);
         double spread = GunsTool.getGunDoubleTag(stack, "Spread");
 
         if (player.level() instanceof ServerLevel serverLevel) {
@@ -219,24 +218,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
                 velocity *= 1.2f;
             }
 
-            gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            gunGrenadeEntity.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity,
-                    (float) (zooming ? 0.1 : spread));
-            serverLevel.addFreshEntity(gunGrenadeEntity);
 
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
-                    4, 0.1, 0.1, 0.1, 0.002, true);
-
-            var serverPlayer = (ServerPlayer) player;
-
-            SoundTool.playLocalSound(serverPlayer, ModSounds.M_79_FIRE_1P.get(), 2, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.M_79_FIRE_3P.get(), SoundSource.PLAYERS, 2, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.M_79_FAR.get(), SoundSource.PLAYERS, 5, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.M_79_VERYFAR.get(), SoundSource.PLAYERS, 10, 1);
-
-            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 2);

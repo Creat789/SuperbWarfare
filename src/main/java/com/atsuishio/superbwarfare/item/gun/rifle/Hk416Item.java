@@ -139,9 +139,7 @@ public class Hk416Item extends GunItem implements GeoItem {
 
         boolean grip = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 2;
 
-        if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.edit"));
-        }
+
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.idle"));
     }

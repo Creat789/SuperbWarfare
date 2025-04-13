@@ -47,7 +47,6 @@ public class EditModeMessage {
                 }
 
                 cap.ifPresent(capability -> {
-                    capability.edit = !cap.orElse(new ModVariables.PlayerVariables()).edit;
                     capability.syncPlayerVariables(player);
                 });
             }

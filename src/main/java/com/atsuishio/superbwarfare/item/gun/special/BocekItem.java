@@ -48,7 +48,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.atsuishio.superbwarfare.network.message.FireMessage.spawnBullet;
 
 public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -196,44 +195,6 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
         }
 
-        if (GunsTool.getGunDoubleTag(stack, "Power") >= 6) {
-            if ((player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).map(c -> c.zoom).orElse(false))) {
-                spawnBullet(player);
-
-                SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
-                player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
-            } else {
-                for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-                    spawnBullet(player);
-                }
-
-                SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);
-                player.playSound(ModSounds.BOCEK_SHATTER_CAP_FIRE_3P.get(), 2, 1);
-            }
-
-            if (perk == ModPerks.BEAST_BULLET.get()) {
-                player.playSound(ModSounds.HENG.get(), 4f, 1f);
-
-                if (player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.HENG.get(), 4f, 1f);
-                }
-            }
-
-            player.getCooldowns().addCooldown(stack.getItem(), 7);
-            GunsTool.setGunIntTag(stack, "ArrowEmpty", 7);
-            GunsTool.setGunDoubleTag(stack, "Power", 0);
-
-            if (!InventoryTool.hasCreativeAmmoBox(player) && !player.isCreative()) {
-                player.getInventory().clearOrCountMatchingItems(p -> Items.ARROW == p.getItem(), 1, player.inventoryMenu.getCraftSlots());
-            }
-        }
     }
 
-    @Override
-    public void fireOnPress(Player player) {
-        player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-            capability.bowPullHold = true;
-            capability.syncPlayerVariables(player);
-        });
-    }
 }

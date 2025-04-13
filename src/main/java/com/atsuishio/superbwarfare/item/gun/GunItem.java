@@ -69,34 +69,6 @@ public abstract class GunItem extends Item {
 
         handleGunPerks(stack);
         handleGunAttachment(stack);
-
-        if ((gunItem.hasBulletInBarrel(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) >
-                GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) + 1)
-                || (!gunItem.hasBulletInBarrel(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) >
-                GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0))
-        ) {
-            int count = GunsTool.getGunIntTag(stack, "Ammo", 0) - GunsTool.getGunIntTag(stack, "Magazine", 0)
-                    + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) - (gunItem.hasBulletInBarrel(stack) ? 1 : 0);
-            entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-
-                if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                    capability.shotgunAmmo = entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).shotgunAmmo + count;
-                } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                    capability.sniperAmmo = entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).sniperAmmo + count;
-                } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                    capability.handgunAmmo = entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).handgunAmmo + count;
-                } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                    capability.rifleAmmo = entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).rifleAmmo + count;
-                } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                    capability.rifleAmmo = entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).heavyAmmo + count;
-                }
-
-                capability.syncPlayerVariables(entity);
-            });
-
-            GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Magazine", 0)
-                    + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
-        }
     }
 
     @Override

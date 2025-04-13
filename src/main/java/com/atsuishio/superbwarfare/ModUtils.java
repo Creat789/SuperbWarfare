@@ -82,7 +82,7 @@ public class ModUtils {
 
         bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);
-        bus.addListener(ModItems::registerDispenserBehavior);
+        //bus.addListener(ModItems::registerDispenserBehavior);
 
         if (ModList.get().isLoaded("tacz")) {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun);
@@ -151,11 +151,11 @@ public class ModUtils {
     public void onCommonSetup(final FMLCommonSetupEvent event) {
         addNetworkMessage(ZoomMessage.class, ZoomMessage::encode, ZoomMessage::decode, ZoomMessage::handler);
         //addNetworkMessage(DoubleJumpMessage.class, DoubleJumpMessage::encode, DoubleJumpMessage::decode, DoubleJumpMessage::handler);
-        addNetworkMessage(GunsDataMessage.class, GunsDataMessage::encode, GunsDataMessage::decode, GunsDataMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        addNetworkMessage(FireMessage.class, FireMessage::encode, FireMessage::decode, FireMessage::handler);
+        //addNetworkMessage(GunsDataMessage.class, GunsDataMessage::encode, GunsDataMessage::decode, GunsDataMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        //addNetworkMessage(FireMessage.class, FireMessage::encode, FireMessage::decode, FireMessage::handler);
         addNetworkMessage(VehicleFireMessage.class, VehicleFireMessage::encode, VehicleFireMessage::decode, VehicleFireMessage::handler);
         //addNetworkMessage(FireModeMessage.class, FireModeMessage::encode, FireModeMessage::decode, FireModeMessage::handler);
-        addNetworkMessage(ReloadMessage.class, ReloadMessage::encode, ReloadMessage::decode, ReloadMessage::handler);
+        //addNetworkMessage(ReloadMessage.class, ReloadMessage::encode, ReloadMessage::decode, ReloadMessage::handler);
         //addNetworkMessage(PlayerGunKillMessage.class, PlayerGunKillMessage::encode, PlayerGunKillMessage::decode, PlayerGunKillMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(ClientIndicatorMessage.class, ClientIndicatorMessage::encode, ClientIndicatorMessage::decode, ClientIndicatorMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(SensitivityMessage.class, SensitivityMessage::encode, SensitivityMessage::decode, SensitivityMessage::handler);
@@ -165,18 +165,18 @@ public class ModUtils {
         addNetworkMessage(VehicleMovementMessage.class, VehicleMovementMessage::encode, VehicleMovementMessage::decode, VehicleMovementMessage::handler);
         addNetworkMessage(DroneFireMessage.class, DroneFireMessage::encode, DroneFireMessage::decode, DroneFireMessage::handler);
         addNetworkMessage(SimulationDistanceMessage.class, SimulationDistanceMessage::encode, SimulationDistanceMessage::decode, SimulationDistanceMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        addNetworkMessage(GunReforgeMessage.class, GunReforgeMessage::encode, GunReforgeMessage::decode, GunReforgeMessage::handler);
+        //addNetworkMessage(GunReforgeMessage.class, GunReforgeMessage::encode, GunReforgeMessage::decode, GunReforgeMessage::handler);
         //addNetworkMessage(SetPerkLevelMessage.class, SetPerkLevelMessage::encode, SetPerkLevelMessage::decode, SetPerkLevelMessage::handler);
         //addNetworkMessage(BreathMessage.class, BreathMessage::encode, BreathMessage::decode, BreathMessage::handler);
-        addNetworkMessage(ModVariables.SavedDataSyncMessage.class, ModVariables.SavedDataSyncMessage::buffer, ModVariables.SavedDataSyncMessage::new, ModVariables.SavedDataSyncMessage::handler);
-        addNetworkMessage(ModVariables.PlayerVariablesSyncMessage.class, ModVariables.PlayerVariablesSyncMessage::buffer, ModVariables.PlayerVariablesSyncMessage::new, ModVariables.PlayerVariablesSyncMessage::handler);
-        addNetworkMessage(ModVariables.PlayerVariablesSyncMessage.class, ModVariables.PlayerVariablesSyncMessage::buffer, ModVariables.PlayerVariablesSyncMessage::new, ModVariables.PlayerVariablesSyncMessage::handler);
+        //addNetworkMessage(ModVariables.SavedDataSyncMessage.class, ModVariables.SavedDataSyncMessage::buffer, ModVariables.SavedDataSyncMessage::new, ModVariables.SavedDataSyncMessage::handler);
+        //addNetworkMessage(ModVariables.PlayerVariablesSyncMessage.class, ModVariables.PlayerVariablesSyncMessage::buffer, ModVariables.PlayerVariablesSyncMessage::new, ModVariables.PlayerVariablesSyncMessage::handler);
+        //addNetworkMessage(ModVariables.PlayerVariablesSyncMessage.class, ModVariables.PlayerVariablesSyncMessage::buffer, ModVariables.PlayerVariablesSyncMessage::new, ModVariables.PlayerVariablesSyncMessage::handler);
         addNetworkMessage(ShootMessage.class, ShootMessage::encode, ShootMessage::decode, ShootMessage::handler);
         //addNetworkMessage(LaserShootMessage.class, LaserShootMessage::encode, LaserShootMessage::decode, LaserShootMessage::handler);
         addNetworkMessage(ShootClientMessage.class, ShootClientMessage::encode, ShootClientMessage::decode, ShootClientMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(ShakeClientMessage.class, ShakeClientMessage::encode, ShakeClientMessage::decode, ShakeClientMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(DrawClientMessage.class, DrawClientMessage::encode, DrawClientMessage::decode, DrawClientMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        addNetworkMessage(EditModeMessage.class, EditModeMessage::encode, EditModeMessage::decode, EditModeMessage::handler);
+        //addNetworkMessage(EditModeMessage.class, EditModeMessage::encode, EditModeMessage::decode, EditModeMessage::handler);
         addNetworkMessage(EditMessage.class, EditMessage::encode, EditMessage::decode, EditMessage::handler);
         addNetworkMessage(SwitchScopeMessage.class, SwitchScopeMessage::encode, SwitchScopeMessage::decode, SwitchScopeMessage::handler);
         addNetworkMessage(SetFiringParametersMessage.class, SetFiringParametersMessage::encode, SetFiringParametersMessage::decode, SetFiringParametersMessage::handler);

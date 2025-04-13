@@ -28,7 +28,6 @@ import java.util.List;
 public class ModVillagers {
 
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ModUtils.MODID);
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS, ModUtils.MODID);
 
     /*public static final RegistryObject<PoiType> ARMORY_POI = POI_TYPES.register("armory",
             () -> new PoiType(ImmutableSet.copyOf(ModBlocks.REFORGING_TABLE.get().getStateDefinition().getPossibleStates()), 1, 1));*/
@@ -39,22 +38,9 @@ public class ModVillagers {
 
     public static void register(IEventBus eventBus) {
         POI_TYPES.register(eventBus);
-        VILLAGER_PROFESSIONS.register(eventBus);
-    }
-
-    @SubscribeEvent
-    public static void addCustomTrades(VillagerTradesEvent event) {
     }
 
     private static Holder<Item> getItemHolder(String name) {
         return ForgeRegistries.ITEMS.getHolder(new ResourceLocation(ModUtils.MODID, name)).orElse(new Holder.Direct<>(ItemStack.EMPTY.getItem()));
-    }
-
-    @SubscribeEvent
-    public static void addWandererTrade(WandererTradesEvent event) {
-        List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
-
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-                SmallContainerBlockItem.createInstance(ModUtils.loc("containers/blueprints")), 10, 0, 0.05f));
     }
 }

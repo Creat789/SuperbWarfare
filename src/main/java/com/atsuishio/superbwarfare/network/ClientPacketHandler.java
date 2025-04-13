@@ -3,13 +3,10 @@ package com.atsuishio.superbwarfare.network;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.overlay.DroneUIOverlay;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
-import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
 import com.atsuishio.superbwarfare.network.message.*;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceKey;
@@ -25,11 +22,7 @@ import java.util.function.Supplier;
 
 public class ClientPacketHandler {
 
-    public static void handleGunsDataMessage(GunsDataMessage message, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            GunsTool.gunsData = message.gunsData;
-        }
-    }
+
 
     public static void handlePlayerKillMessage(Player attacker, Entity target, boolean headshot, ResourceKey<DamageType> damageType, Supplier<NetworkEvent.Context> ctx) {
 

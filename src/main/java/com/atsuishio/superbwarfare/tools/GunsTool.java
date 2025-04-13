@@ -85,12 +85,7 @@ public class GunsTool {
         stack.addTagElement("GunData", data);
     }
 
-    @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new GunsDataMessage(GunsTool.gunsData));
-        }
-    }
+
 
     @SubscribeEvent
     public static void serverStarted(ServerStartedEvent event) {
@@ -114,17 +109,7 @@ public class GunsTool {
             GunsTool.setGunBooleanTag(stack, "NeedBoltAction", false);
         }
 
-        int playerAmmo = player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).map(type::get).orElse(0);
 
-        player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-            var newAmmoCount = Math.max(0, playerAmmo - ammoToAdd);
-            type.set(capability, newAmmoCount);
-            capability.syncPlayerVariables(player);
-        });
-
-        int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
-
-        GunsTool.setGunIntTag(stack, "Ammo", needToAdd);
         tag.putBoolean("is_normal_reloading", false);
         tag.putBoolean("is_empty_reloading", false);
     }

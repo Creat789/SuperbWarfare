@@ -137,9 +137,6 @@ public class M4Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.edit"));
-        }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.idle"));
     }

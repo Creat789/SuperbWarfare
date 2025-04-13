@@ -42,14 +42,6 @@ public class AmmoSupplierItem extends Item {
 
         ItemStack offhandItem = player.getOffhandItem();
 
-        if (offhandItem.is(ModItems.AMMO_BOX.get())) {
-            this.type.add(offhandItem, ammoToAdd * count);
-        } else {
-            player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-                this.type.add(capability, ammoToAdd * count);
-                capability.syncPlayerVariables(player);
-            });
-        }
 
         if (!level.isClientSide()) {
             player.displayClientMessage(Component.translatable("item.superbwarfare.ammo_supplier.supply", Component.translatable(this.type.translatableKey), ammoToAdd * count), true);

@@ -212,46 +212,16 @@ public class ClickHandler {
             if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
                 handleConfigScreen(player);
             }
-            if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new ReloadMessage(0));
-            }
-            if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-                ModUtils.PACKET_HANDLER.sendToServer(new FireModeMessage(0));
-            }
+
+
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 ModUtils.PACKET_HANDLER.sendToServer(new InteractMessage(0));
             }
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }
-            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireSize == 0) {
-                ClientEventHandler.holdFire = false;
-                ModUtils.PACKET_HANDLER.sendToServer(new EditModeMessage(0));
-            }
 
-            if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
-                if (!(stack.getItem() instanceof GunItem gunItem)) return;
-                if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
-                    if (key == ModKeyMappings.EDIT_GRIP.getKey().getValue() && gunItem.hasCustomGrip(stack)) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new EditMessage(4));
-                        editModelShake();
-                    }
-                } else {
-                    if (key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() && gunItem.hasCustomScope(stack)) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new EditMessage(0));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_BARREL.getKey().getValue() && gunItem.hasCustomBarrel(stack)) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new EditMessage(1));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_MAGAZINE.getKey().getValue() && gunItem.hasCustomMagazine(stack)) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new EditMessage(2));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_STOCK.getKey().getValue() && gunItem.hasCustomStock(stack)) {
-                        ModUtils.PACKET_HANDLER.sendToServer(new EditMessage(3));
-                        editModelShake();
-                    }
-                }
-            }
+
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {
                 ModUtils.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
             }
@@ -332,25 +302,10 @@ public class ClickHandler {
                     && !notInGame()) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             }
-
-            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(stack, "ReloadTime") == 0) {
-                if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-                    ModUtils.PACKET_HANDLER.sendToServer(new ReloadMessage(0));
-                }
-            } else {
-                ModUtils.PACKET_HANDLER.sendToServer(new FireMessage(0));
-                /*if (!stack.is(ModItems.BOCEK.get())) {
-                    ClientEventHandler.holdFire = true;
-                }*/
-                if (GunsTool.getGunIntTag(stack, "FireMode") == 1 && ClientEventHandler.burstFireSize == 0) {
-                    ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(stack, "BurstSize", 1);
-                }
-            }
         }
     }
 
     public static void handleWeaponFireRelease() {
-        ModUtils.PACKET_HANDLER.sendToServer(new FireMessage(1));
         ClientEventHandler.holdFire = false;
         ClientEventHandler.holdFireVehicle = false;
         ClientEventHandler.customRpm = 0;
@@ -395,12 +350,6 @@ public class ClickHandler {
             return;
         }
 
-        if (player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).playerDoubleJump) {
-            player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
-            level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-
-            ModUtils.PACKET_HANDLER.sendToServer(new DoubleJumpMessage(false));
-        }
     }
 
     private static void handleConfigScreen(Player player) {

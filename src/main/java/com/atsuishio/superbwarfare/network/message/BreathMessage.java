@@ -27,25 +27,6 @@ public class BreathMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-
-            if (player != null) {
-                var cap = player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null);
-
-                if (message.type && !cap.orElse(new ModVariables.PlayerVariables()).breathExhaustion && cap.orElse(new ModVariables.PlayerVariables()).zoom &&
-                        player.getPersistentData().getDouble("NoBreath") == 0) {
-                    cap.ifPresent(capability -> {
-                        capability.breath = true;
-                        capability.syncPlayerVariables(player);
-                    });
-                }
-
-                if (!message.type) {
-                    cap.ifPresent(capability -> {
-                        capability.breath = false;
-                        capability.syncPlayerVariables(player);
-                    });
-                }
-            }
         });
         context.setPacketHandled(true);
     }

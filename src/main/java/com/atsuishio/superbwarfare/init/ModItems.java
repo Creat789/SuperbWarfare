@@ -2,9 +2,6 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.*;
-import com.atsuishio.superbwarfare.item.armor.*;
-import com.atsuishio.superbwarfare.item.common.BlueprintItem;
-import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
@@ -120,8 +117,6 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModUtils.MODID);
 
-    public static final RegistryObject<Item> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
-    //public static final RegistryObject<Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.SENPAI, -11584987, -14014413, new Item.Properties()));
     public static final RegistryObject<Item> ANCIENT_CPU = ITEMS.register("ancient_cpu", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> PROPELLER = ITEMS.register("propeller", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> LARGE_PROPELLER = ITEMS.register("large_propeller", () -> new Item(new Item.Properties()));
@@ -271,6 +266,8 @@ public class ModItems {
     public static final RegistryObject<Item> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
     public static final RegistryObject<Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);*/
     //public static final RegistryObject<Item> FUMO_25 = block(ModBlocks.FUMO_25);
+   public static final RegistryObject<Item> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
+    public static final RegistryObject<Item> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
 
     private static RegistryObject<Item> block(RegistryObject<Block> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
@@ -293,7 +290,7 @@ public class ModItems {
     /**
      * 单独注册，用于Tab图标，不要删
      */
-    public static final RegistryObject<Item> AP_BULLET = PERKS.register("ap_bullet", () -> new PerkItem(ModPerks.AP_BULLET));
+    //public static final RegistryObject<Item> AP_BULLET = PERKS.register("ap_bullet", () -> new PerkItem(ModPerks.AP_BULLET));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

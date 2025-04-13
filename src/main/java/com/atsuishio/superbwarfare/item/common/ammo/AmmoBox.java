@@ -46,15 +46,6 @@ public class AmmoBox extends Item {
             for (var ammoType : types) {
                 if (ammoType == null) return;
 
-                if (player.isCrouching()) {
-                    // 存入弹药
-                    ammoType.add(tag, ammoType.get(cap));
-                    ammoType.set(cap, 0);
-                } else {
-                    // 取出弹药
-                    ammoType.add(cap, ammoType.get(tag));
-                    ammoType.set(tag, 0);
-                }
             }
             capability.syncPlayerVariables(player);
 
